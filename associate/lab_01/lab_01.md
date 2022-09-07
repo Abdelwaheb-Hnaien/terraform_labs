@@ -27,18 +27,18 @@ Bucket name should be unique accross the globe, so add a random suffix to the bu
 
 Run :
 ```bash
-Terraform init
+terraform init
 ```
 this command will initialise terraform, i.e download locally Google Cloud SDK to be able to run api calls next.
 
 Let's see what resources are going to be created by the code, to do this run:
 ```bash
-Terraform Plan
+terraform Plan
 ```
 
 It's time now to create the resources describe by our IaC. to do this run :
 ```bash
-Terraform apply --auto-approve
+terraform apply --auto-approve
 ```
 
 Verify that the bucket is created successefully via the Google Cloud Console.
