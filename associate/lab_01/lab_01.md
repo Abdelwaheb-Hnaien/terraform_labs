@@ -12,7 +12,7 @@ Firstly, we'll authorize gcloud to access the Cloud Platform with Google user cr
 gcloud auth login
 ```
 
-Answer Yes when prompted, click the link that should appear after that, chose your account then click allow.
+Answer **Yes** when prompted, click the link that should appear after that, chose your account then click allow (Make sure to select your Sephora account), copy the code and paste it in cloud shell. press Enter.
 
 Let's inspect what we have,
 ```bash
@@ -33,7 +33,7 @@ this command will initialise terraform, i.e download locally Google Cloud SDK to
 
 Let's see what resources are going to be created by the code, to do this run:
 ```bash
-terraform Plan
+terraform plan
 ```
 
 It's time now to create the resources describe by our IaC. to do this run :
