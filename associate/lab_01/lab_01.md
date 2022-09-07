@@ -1,6 +1,6 @@
 # [Associate] SEPHORA Terraform Course - Lab 01
 
-![SEPHORA_TERRAFORM](associate/lab_01/sephora_terraform.png)
+![SEPHORA_TERRAFORM](https://drive.google.com/file/d/1TTZA_I2htYy7lGIwZ6RWryd82IZ2zVUq/view?usp=sharing)
 
 After following the tutorial steps, you'll aquire the following knowledges:
 - Run basic terraform commands
