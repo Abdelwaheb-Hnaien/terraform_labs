@@ -16,7 +16,7 @@ Answer Yes when prompted, click the link that should appear after that, chose yo
 
 Let's inspect what we have,
 ```bash
-cd iac
+cd associate/lab_01/iac/
 cat main.tf
 ```
 
