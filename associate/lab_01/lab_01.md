@@ -18,11 +18,19 @@ Answer **Yes** when prompted, click the link that appears, chose your account th
 
 press Enter. Now you should be able to interact with GCP via gcloud command. :white_check_mark:
 
-<walkthrough-editor-select-line filePath="associate/lab_01/iac/main.tf" startLine="0" endLine="1">open main.tf</walkthrough-editor-select-line>
-
 Let's see what we have. Open Cloud Shell Editor and navigate to **associate/lab_01/iac/**
 
 ![](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cloudshell_editor.png)
+
+<walkthrough-open-cloud-shell-button></walkthrough-open-cloud-shell-button>
+
+
+<walkthrough-editor-open-file filePath="associate/lab_01/iac/main.tf">LINK_TEXT</walkthrough-editor-open-file>
+
+<walkthrough-editor-spotlight spotlightId="activity-bar-cloud-k8s">LINK_TEXT</walkthrough-editor-spotlight>
+
+
+<walkthrough-editor-open-file filePath="FILE_PATH">LINK_TEXT</walkthrough-editor-open-file>
 
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
 
