@@ -28,7 +28,7 @@ We have prepared a script that will do things on your behalf. Don't worry if you
 
 Make the script executable:
 ```bash  
-chmod +x /associate/lab_01/setup_project.sh
+chmod +x associate/lab_01/setup_project.sh
 ```
 
 Run the script:
