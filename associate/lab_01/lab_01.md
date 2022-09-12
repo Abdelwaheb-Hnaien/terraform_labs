@@ -1,5 +1,5 @@
 # [Associate] SEPHORA Terraform Course - Lab 01
-
+## Introduction
 ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/sephora_terraform_bw.png)
 
 After following the tutorial steps, you'll aquire the following knowledges:
@@ -8,15 +8,28 @@ After following the tutorial steps, you'll aquire the following knowledges:
 - Apply modification to your infrastructure (update and destroy)
 
 ## Set up authentication
-Firstly, we'll authorize gcloud to access Google Cloud Platform with user credentials :
 
+First we need to authenticate and access our project
 ```bash
-gcloud auth login
+gcloud auth application-default login --no-launch-browser
 ```
 
 Answer **Yes** when prompted, click the link that appears, chose your account then click allow **(Make sure to select your Sephora account)**, copy the code and paste it back to cloud shell. Press Enter.
 
 Now you should be able to interact with GCP with gcloud command. :white_check_mark:
+
+## Connect to a GCP project
+
+```bash
+./setup_project.sh <walkthrough-project-name/>
+```
+**TIPS :** don't forget to change `PROJECT_ID`. Ask Sephora Socle team if you don't have it.
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform-tuto/setup_project.sh">
+    check script
+</walkthrough-editor-open-file>
+
 
 ## Inspect terraform code
 Let's see what we have, open Cloud Shell Editor and take a look at the file named main.tf :
@@ -24,7 +37,7 @@ Let's see what we have, open Cloud Shell Editor and take a look at the file name
 <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
 
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
-
+***
 ## Make changes to the code
 Replace **"your-project-id"** with an existing project id (Should be provided by socle GCP Team). Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name.
 
