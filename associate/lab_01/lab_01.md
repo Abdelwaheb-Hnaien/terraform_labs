@@ -69,7 +69,6 @@ Save file 📝.
 
 ## Run Terraform commands
 
-Run :
 ```bash
 terraform init
 ```
