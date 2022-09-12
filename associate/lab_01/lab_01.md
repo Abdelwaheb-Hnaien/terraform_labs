@@ -53,9 +53,19 @@ Let's see what we have, open Cloud Shell Editor and take a look at the file name
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
 ***
 ## Make changes to the code
-Replace **"your-project-id"** with an existing project id (Should be provided by socle GCP Team). Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name.
+Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
 
 __Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
+
+```tf
+resource "google_storage_bucket" "auto-expire" {
+  name          = "auto-expiring-bucket-jdo"
+  location      = "EUROPE-WEST1"
+  force_destroy = true
+}
+````
+
+Save file 📝.
 
 ## Run Terraform commands
 
