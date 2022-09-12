@@ -7,7 +7,7 @@ After following the tutorial steps, you'll aquire the following knowledges:
 - know how to read and inspect Terraform code
 - Apply modification to your infrastructure (update and destroy)
 
-
+## Set up authentication
 Firstly, we'll authorize gcloud to access Google Cloud Platform with user credentials :
 
 ```bash
@@ -18,15 +18,19 @@ Answer **Yes** when prompted, click the link that appears, chose your account th
 
 Now you should be able to interact with GCP with gcloud command. :white_check_mark:
 
+## Inspect terraform code
 Let's see what we have, open Cloud Shell Editor and take a look at the file named main.tf :
 
 <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
 
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
 
+## Make changes to the code
 Replace **"your-project-id"** with an existing project id (Should be provided by socle GCP Team). Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name.
 
 __Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
+
+## Run Terraform commands
 
 Run :
 ```bash
@@ -43,18 +47,31 @@ terraform plan
 - Reads the current state of any already-existing remote objects to make sure that the Terraform state is up-to-date.  
 - Compares the current configuration to the prior state and noting any differences.
 - Proposes a set of change actions that should, if applied, make the remote objects match the configuration.</em>
-</br><br>
+
 <em><u>source</u> :  [https://www.terraform.io/cli/commands/plan](https://www.terraform.io/cli/commands/plan)</em>
 
 It's time now to create the resources describe by our IaC. To do this run:
 ```bash
 terraform apply
 ```
-Optioanally you can add the `--auto-approve` flag to the previous command to Ssip interactive approval of plan before applying. This can be usefull when running `terraform apply` command in CICD pipelines.
+Optioanally you can add the `--auto-approve` flag to the previous command to Ssip interactive approval of plan before applying.
+
+This can be usefull when running `terraform apply` command in CICD pipelines.
 
 In the Google Cloud console, go to the Cloud Storage Buckets page and verify that the bucket is created successfully.
 
-Notice that Terraform generates a **tfstate** file locally that contains traces of what has been created. Open the terraform.tfstate file with Cloud Shell Editor and see it's content.
+## Inspect Terraform tfstate
+
+Notice that Terraform generates a `terraform.tfstate` file locally that contains traces of what has been created. Inspect the file:
+
+<walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/terraform.tfstate">Open terraform.tfstate</walkthrough-editor-open-file>
+
+## Cleanup
+
+```bash
+terraform destroy --auto-approve
+```
+In the Google Cloud console, go to the Cloud Storage Buckets page and verify that the bucket is no longer existing.
 
 You're all set!
 
