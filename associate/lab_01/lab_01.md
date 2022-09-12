@@ -24,6 +24,9 @@ Steps:
 Now you should be able to interact with GCP with gcloud command.
 
 ## Connect to a GCP project
+
+<walkthrough-project-setup></walkthrough-project-setup>
+
 We have prepared a script that will do things on your behalf. Don't worry if you don't understand this for the moment.
 
 Make the script executable:
