@@ -25,12 +25,8 @@ Let's see what we have. Open Cloud Shell Editor and navigate to **associate/lab_
 <walkthrough-open-cloud-shell-button></walkthrough-open-cloud-shell-button>
 
 
-<walkthrough-editor-open-file filePath="associate/lab_01/iac/main.tf">LINK_TEXT</walkthrough-editor-open-file>
+<walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf">LINK_TEXT</walkthrough-editor-open-file>
 
-<walkthrough-editor-spotlight spotlightId="activity-bar-cloud-k8s">LINK_TEXT</walkthrough-editor-spotlight>
-
-
-<walkthrough-editor-open-file filePath="FILE_PATH">LINK_TEXT</walkthrough-editor-open-file>
 
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
 
