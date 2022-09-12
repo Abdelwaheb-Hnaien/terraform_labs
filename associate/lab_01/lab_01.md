@@ -22,7 +22,7 @@ Let's see what we have. Open Cloud Shell Editor and take a look at the file name
 
 <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
 
-<walkthrough-editor-select-line filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf" startLine="1" endLine="3">Open main.tf lines</walkthrough-editor-select-line>
+<walkthrough-editor-select-line filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf" startLine=1 endLine=3>Open main.tf lines</walkthrough-editor-select-line>
 
 
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
