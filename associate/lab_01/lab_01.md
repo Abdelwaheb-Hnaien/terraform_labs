@@ -20,7 +20,7 @@ press Enter. Now you should be able to interact with GCP via gcloud command. :wh
 
 Let's see what we have. Open Cloud Shell Editor and take a look at the file named main.tf :
 
-<walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf" startLine="2" endLine="3">Open main.tf</walkthrough-editor-open-file>
+<walkthrough-editor-select-line filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf" startLine="2" endLine="3">Open main.tf</walkthrough-editor-select-line>
 
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
 
