@@ -26,6 +26,7 @@ Now you should be able to interact with GCP with gcloud command.
 ## Connect to a GCP project
 
 ```bash
+chmod +x /associate/lab_01/setup_project.s &&
 ./associate/lab_01/setup_project.sh <walkthrough-project-name/>
 ```
 **TIPS :** don't forget to change `PROJECT_ID`. Ask Sephora Socle team if you don't have it.
