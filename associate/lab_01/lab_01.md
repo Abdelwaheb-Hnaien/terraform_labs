@@ -14,38 +14,36 @@ Firstly, we'll authorize gcloud to access Google Cloud Platform with user creden
 gcloud auth login
 ```
 
-Answer **Yes** when prompted, click the link that appears, chose your account then click allow **(Make sure to select your Sephora account)**, copy the code and paste it back to cloud shell.
+Answer **Yes** when prompted, click the link that appears, chose your account then click allow **(Make sure to select your Sephora account)**, copy the code and paste it back to cloud shell. Press Enter.
 
-press Enter. Now you should be able to interact with GCP via gcloud command. :white_check_mark:
+Now you should be able to interact with GCP with gcloud command. :white_check_mark:
 
-Let's see what we have. Open Cloud Shell Editor and take a look at the file named main.tf :
+Let's see what we have, open Cloud Shell Editor and take a look at the file named main.tf :
+
+<walkthrough-spotlight-pointer spotlightId="devshell-activate-button">Open Cloud Shell</walkthrough-spotlight-pointer>
 
 <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
 
-<walkthrough-editor-select-line filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf" startLine=1 endLine=3>Open main.tf lines</walkthrough-editor-select-line>
-
-
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
 
-Replace **"your-project-id"** with an existing project id (Should be provided by socle GCP Team).
-Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name.
+Replace **"your-project-id"** with an existing project id (Should be provided by socle GCP Team). Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name.
 
-__Exemple__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
+__Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
 
 Run :
 ```bash
 terraform init
 ```
->The terraform init command is used to initialize a working directory containing Terraform configuration files. This is the first command that should be run after writing a new Terraform configuration or cloning an existing one from version control. It is safe to run this command multiple times.  
+<em>The terraform init command is used to initialize a working directory containing Terraform configuration files. This is the first command that should be run after writing a new Terraform configuration or cloning an existing one from version control. It is safe to run this command multiple times.</em>  
 <em><u>source</u> :  [https://www.terraform.io/cli/commands/init](https://www.terraform.io/cli/commands/init)</em>
 
 ```bash
 terraform plan
 ```
-> The terraform plan command creates an execution plan, which lets you preview the changes that Terraform plans to make to your infrastructure. By default, when Terraform creates a plan it:
+<em>The terraform plan command creates an execution plan, which lets you preview the changes that Terraform plans to make to your infrastructure. By default, when Terraform creates a plan it:
 - Reads the current state of any already-existing remote objects to make sure that the Terraform state is up-to-date.  
 - Compares the current configuration to the prior state and noting any differences.
-- Proposes a set of change actions that should, if applied, make the remote objects match the configuration.
+- Proposes a set of change actions that should, if applied, make the remote objects match the configuration.</em>
 </br><br>
 <em><u>source</u> :  [https://www.terraform.io/cli/commands/plan](https://www.terraform.io/cli/commands/plan)</em>
 
@@ -59,6 +57,6 @@ In the Google Cloud console, go to the Cloud Storage Buckets page and verify tha
 
 Notice that Terraform generates a **tfstate** file locally that contains traces of what has been created. Open the terraform.tfstate file with Cloud Shell Editor and see it's content.
 
-<walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
-
 You're all set!
+
+<walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
