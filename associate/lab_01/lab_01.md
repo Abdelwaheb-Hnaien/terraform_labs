@@ -13,20 +13,25 @@ First we need to authenticate and access our project
 ```bash
 gcloud auth application-default login --no-launch-browser
 ```
+Steps:
+ - Answer **Yes** when prompted
+ - Click the link that appears
+ - Chose your account **(Make sure to select your Sephora account)**
+ - Click allow
+ - Copy the code and paste it back to cloud shell
+ - Press Enter.
 
-Answer **Yes** when prompted, click the link that appears, chose your account then click allow **(Make sure to select your Sephora account)**, copy the code and paste it back to cloud shell. Press Enter.
-
-Now you should be able to interact with GCP with gcloud command. :white_check_mark:
+Now you should be able to interact with GCP with gcloud command.
 
 ## Connect to a GCP project
 
 ```bash
-./setup_project.sh <walkthrough-project-name/>
+./associate/lab_01/setup_project.sh <walkthrough-project-name/>
 ```
 **TIPS :** don't forget to change `PROJECT_ID`. Ask Sephora Socle team if you don't have it.
 
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform-tuto/setup_project.sh">
+    filePath="cloudshell_open/terraform_labs/associate/lab_01/setup_project.sh">
     check script
 </walkthrough-editor-open-file>
 
