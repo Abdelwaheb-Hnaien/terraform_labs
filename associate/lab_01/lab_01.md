@@ -20,8 +20,6 @@ Now you should be able to interact with GCP with gcloud command. :white_check_ma
 
 Let's see what we have, open Cloud Shell Editor and take a look at the file named main.tf :
 
-<walkthrough-spotlight-pointer spotlightId="devshell-activate-button">Open Cloud Shell</walkthrough-spotlight-pointer>
-
 <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_01/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
 
 Files in this directory are intended to deploy a GCS bucket to Google Cloud.
@@ -35,6 +33,7 @@ Run :
 terraform init
 ```
 <em>The terraform init command is used to initialize a working directory containing Terraform configuration files. This is the first command that should be run after writing a new Terraform configuration or cloning an existing one from version control. It is safe to run this command multiple times.</em>  
+
 <em><u>source</u> :  [https://www.terraform.io/cli/commands/init](https://www.terraform.io/cli/commands/init)</em>
 
 ```bash
