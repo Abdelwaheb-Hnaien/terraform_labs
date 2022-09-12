@@ -24,9 +24,15 @@ Steps:
 Now you should be able to interact with GCP with gcloud command.
 
 ## Connect to a GCP project
+We have prepared a script that will do things on your behalf. Don't worry if you don't understand this for the moment.
 
-```bash
-chmod +x /associate/lab_01/setup_project.s &&
+Make the script executable:
+```bash  
+chmod +x /associate/lab_01/setup_project.sh
+```
+
+Run the script:
+```bash  
 ./associate/lab_01/setup_project.sh <walkthrough-project-name/>
 ```
 **TIPS :** don't forget to change `PROJECT_ID`. Ask Sephora Socle team if you don't have it.
@@ -35,7 +41,6 @@ chmod +x /associate/lab_01/setup_project.s &&
     filePath="cloudshell_open/terraform_labs/associate/lab_01/setup_project.sh">
     check script
 </walkthrough-editor-open-file>
-
 
 ## Inspect terraform code
 Let's see what we have, open Cloud Shell Editor and take a look at the file named main.tf :
