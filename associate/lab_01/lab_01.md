@@ -1,4 +1,4 @@
-# [Associate] SEPHORA Terraform Course - Lab 01
+# [Associate] SEPHORA Terraform Course - Lab 01 : Full workflow
 ## Introduction
 ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/sephora_terraform_bw.png)
 
