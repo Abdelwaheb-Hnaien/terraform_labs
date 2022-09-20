@@ -21,7 +21,19 @@ Steps:
  - Copy the code and paste it back to cloud shell
  - Press Enter.
 
-Now you should be able to interact with GCP with gcloud command.
+```bash
+ gcloud auth application-default set-quota-project <PROJECT_ID>
+```
+**Tips**: Socle Team should provide you with the PROJECT_ID value.
+
+This command will add a quota project in application default credentials and saves the credentials file to a temp directory :
+
+![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cred_path.png)
+
+Run :
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS=<path-to-cred-file>
+```
 
 ## Connect to a GCP project
 
