@@ -9,6 +9,34 @@ In this lab, we will see :
   - Outputs
   - Resource dependencies
 
+## Set up authentication
+
+First we need to authenticate and access our project
+```bash
+gcloud auth application-default login --no-launch-browser
+```
+Steps:
+ - Answer **Yes** when prompted
+ - Click the link that appears
+ - Chose your account **(Make sure to select your Sephora account)**
+ - Click allow
+ - Copy the code and paste it back to cloud shell
+ - Press Enter.
+
+```bash
+ gcloud auth application-default set-quota-project <PROJECT_ID>
+```
+**Tips**: Socle Team should provide you with the PROJECT_ID value.
+
+This command will add a quota project in application default credentials and saves the credentials file to a temp directory :
+
+![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cred_path.png)
+
+Run :
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS=<path-to-cred-file>
+```
+
 ## Deploy resource
 Let's use what we have learned in previous labs to create a bigquery dataset.
 
@@ -22,7 +50,7 @@ provider "google" {
 **Tip** : Replace **PROJECT-ID** with a valid project id.
 
 Now, let's declare the resource :
-Create `/iac/main.tf`:
+Create `lab_03/iac/main.tf`:
 ```tf
 resource "google_bigquery_dataset" "dataset" {
   dataset_id                  = "example_dataset"
@@ -37,6 +65,9 @@ You can do this via Cloud Shell editor.
 ![cloud_shell_editor](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cloudshell_editor.png)
 
 Run
+```bash
+cd associate/lab_03/iac/
+```
 ```bash
 terraform init
 ```
