@@ -1,24 +1,36 @@
-# [Associate] SEPHORA Terraform Course - Lab 02 : Providers initialization
+# [Associate] SEPHORA Terraform Course - Lab 03 : Providers initialization
 ## Introduction
 ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/sephora_terraform_bw.png)
 
-In this lab, you'll learn how to work with Terraform **GCP Provider**.
+In this lab, we will see :
+  - Deploy resource
+  - Use variables and locals
+  - Use Data sources
+  - Outputs
+  - Resource dependencies
 
-## Initialize Provider
+## Deploy resource
+Let's use what we have learned in previous labs to create a bigquery dataset.
 
-Under the folder `iac`, Create a file named `provider.tf` with the following content:
+Decalre the provider first. Create a file named `provider.tf` under the folder `iac` with the following content:
 ```tf
 provider "google" {
   project     = "PROJECT-ID"
   region      = "europe-west1"
 }
-
-provider "google-beta" {
-  project     = "PROJECT-ID"
-  region      = "europe-west1"
-}
 ```
 **Tip** : Replace **PROJECT-ID** with a valid project id.
+
+Now, let's declare the resource :
+Create `/iac/main.tf`:
+```tf
+resource "google_bigquery_dataset" "dataset" {
+  dataset_id                  = "example_dataset"
+  friendly_name               = "test"
+  description                 = "This is a test"
+  location                    = "EU"
+}
+```
 
 You can do this via Cloud Shell editor.
 
@@ -27,6 +39,12 @@ You can do this via Cloud Shell editor.
 Run
 ```bash
 terraform init
+```
+```bash
+terraform plan
+```
+```bash
+terraform apply
 ```
 You should see similar output :
 ![tf_init](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_init.png)
