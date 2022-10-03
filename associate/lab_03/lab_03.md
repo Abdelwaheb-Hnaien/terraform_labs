@@ -1,4 +1,4 @@
-# [Associate] SEPHORA Terraform Course - Lab 03 : Providers initialization
+# [Associate] SEPHORA Terraform Course - Lab 03 : resources/variables/locals/data/outputs
 ## Introduction
 ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/sephora_terraform_bw.png)
 
@@ -77,92 +77,89 @@ terraform plan
 ```bash
 terraform apply
 ```
+
 You should see similar output :
-![tf_init](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_init.png)
+![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_apply.png)
 
-Terraform GCP provider definition block supports multiple arguments. Here for instance we specified `project` and `region`, which means all resources are going to be created in that project and in that specefic region unless it is specified differently in the resource bloc. i.e `project` and `region` in the resource bloc overrides those in the provider definition bloc.
+## Use variables
 
-## Provider credentials
+Let's make the code looks better by using variables.
 
-Terraform Provider supports the credentials field (Optional) that should be set to the path of a service account key file, not user account credentials file.
+Update `main.tf`
 ```tf
-provider "google" {
-  project     = "PROJECT-ID"
-  region      = "europe-west1"
-  credentials = "/path/to/service_account.key"
+resource "google_bigquery_dataset" "dataset" {
+  dataset_id                  = var.dataset_id
+  friendly_name               = var.friendly_name
+  description                 = var.description
+  location                    = var.location
 }
 ```
 
-If you want to authenticate with your user account try omitting credentials and then running :
+Create a file `varibales.tf`
+
+```tf
+variable "dataset_id" {
+  type : string
+  description : the dataset id
+}
+variable "friendly_name" {
+  type : string
+  description : Dataset display name
+}
+variable "description" {
+  type : string
+  description : Dataset description
+}
+variable "location" {
+  type : string
+  description : the dataset location
+  default: "EU"
+}
+```
+
+Create a file `terraform.tfvars`
+
+```tf
+dataset_id    = "example_dataset"
+friendly_name = "test"
+description   = "This is a test"
+location      = "EU"
+```
+
+Run
 ```bash
-gcloud auth application-default login --no-launch-browser
+terraform init
 ```
-Steps:
- - Answer **Yes** when prompted
- - Click the link that appears
- - Chose your account **(Make sure to select your Sephora account)**
- - Click allow
- - Copy the code and paste it back to cloud shell
- - Press Enter.
-
-## Create resources
-
-Let's try out to create a GCS storage bucket using that provider.
-
-Create a file named `main.tf` at the same directory as `provider.tf`.
-
-```tf
-resource "google_storage_bucket" "static" {
-  provider      = "google"
-  name          = "Bucket-Name"
-  storage_class = "COLDLINE"
-  force_destroy = true
-
-  uniform_bucket_level_access = true
-}
-```
-**Notice**: Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
-
-__Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
-
-Verify the bucket is created in **europe-west1** in the project defined in the provider resource bloc.
-
-## Override Provider attributes
-
-Let's deploy the bucket to another project in a a different location.
-
-```tf
-resource "google_storage_bucket" "static" {
-  provider      = "google"
-  project       = "Another-Project-ID"
-  name          = "Bucket-Name"
-  Location      = "europe-west1-c"
-  storage_class = "COLDLINE"
-  force_destroy = true
-
-  uniform_bucket_level_access = true
-}
+```bash
+terraform plan
 ```
 
-**Tip** : Replace **Another-Project-ID** with a valid project id.
+You should see "No changes. Your infrastructure matches the configuration."
 
-Verify that the bucket is recreated in "europe-west1-c" in the right project.
+## Use locals
+Terraform local values (or "locals") assign a name to an expression or value. Using locals **simplifies** your Terraform configuration – since you can reference the local **multiple** times, you **reduce** duplication in your code. Locals can also help you write **more readable** configuration by using meaningful names **rather** than hard-coding values.
 
-## Use different providers for resources
-Use the provider argument for every GCP resource: `google-beta` for any resource that has at least one enabled Beta feature:
+Suppose you have a resource naming convention within your organization that says that a Bigquery Dataset should always be prefixed with the project id. You can use local variables to do so.
+Update `main.tf`
 ```tf
-resource "google_container_cluster" "beta_cluster" {
-   . . .
-   provider        = google-beta
-   . . .
+locals {
+  org_dataset_id = "my-project-id-${var.dataset_id}"
+
+}
+resource "google_bigquery_dataset" "dataset" {
+  dataset_id                  = locals.org_dataset_id
+  friendly_name               = var.friendly_name
+  description                 = var.description
+  location                    = var.location
 }
 ```
-
-and and `google` for every other resource:
-```tf
-resource "google_container_node_pool" "general_availability_node_pool" {
-  . . .
-  provider       = google
-  . . .
-}
+Run
+```bash
+terraform init
+```
+```bash
+terraform plan
+```
+```bash
+terraform apply
 ```

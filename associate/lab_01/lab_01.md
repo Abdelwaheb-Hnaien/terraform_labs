@@ -21,10 +21,13 @@ Steps:
  - Copy the code and paste it back to cloud shell
  - Press Enter.
 
+ Select a project :
+ <walkthrough-project-setup></walkthrough-project-setup>
+
 ```bash
  gcloud auth application-default set-quota-project <PROJECT_ID>
 ```
-**Tips**: Socle Team should provide you with the PROJECT_ID value.
+**Tips**: Socle Team should tell you which project you should select.
 
 This command will add a quota project in application default credentials and saves the credentials file to a temp directory :
 
