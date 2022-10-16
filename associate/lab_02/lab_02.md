@@ -6,19 +6,22 @@ In this lab, you'll learn how to work with Terraform **GCP Provider**.
 
 ## Initialize Provider
 
+<walkthrough-project-setup></walkthrough-project-setup>
+
+**Tip** : Socle GCP Team should tell you what project to select.
+
 Under the folder `iac`, Create a file named `provider.tf` with the following content:
 ```tf
 provider "google" {
-  project     = "PROJECT-ID"
+  project     = "<walkthrough-project-id/>"
   region      = "europe-west1"
 }
 
 provider "google-beta" {
-  project     = "PROJECT-ID"
+  project     = "<walkthrough-project-id/>"
   region      = "europe-west1"
 }
 ```
-**Tip** : Replace **PROJECT-ID** with a valid project id.
 
 You can do this via Cloud Shell editor.
 
