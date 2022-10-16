@@ -23,7 +23,7 @@ Steps:
 
  <walkthrough-project-setup></walkthrough-project-setup>
 
-Run : 
+Run :
 ```bash
  gcloud auth application-default set-quota-project <walkthrough-project-id/>
 ```
@@ -108,11 +108,11 @@ It's time now to create the resources describe by our IaC. To do this run:
 ```bash
 terraform apply
 ```
-Optioanally you can add the `--auto-approve` flag to the previous command to Ssip interactive approval of plan before applying.
+Optioanally you can add the `--auto-approve` flag to the previous command to skip the approving prompt.
 
 This can be usefull when running `terraform apply` command in CICD pipelines.
 
-In the Google Cloud console, go to the Cloud Storage Buckets page and verify that the bucket is created successfully.
+In the Google Cloud console, go to the Cloud Storage Bucket list page and verify that the bucket is created successfully (make sure you are in the right project).
 
 ## Inspect Terraform tfstate
 
