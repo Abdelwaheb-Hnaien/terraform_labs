@@ -41,7 +41,7 @@ Terraform GCP provider definition block supports multiple arguments. Here for in
 Terraform Provider supports the credentials field (Optional) that should be set to the path of a service account key file, not user account credentials file.
 ```tf
 provider "google" {
-  project     = "PROJECT-ID"
+  project     = "<walkthrough-project-id/>"
   region      = "europe-west1"
   credentials = "/path/to/service_account.key"
 }
@@ -59,16 +59,19 @@ Steps:
  - Copy the code and paste it back to cloud shell
  - Press Enter.
 
-## Create resources
+## Use default provider attributes
 
 Let's try out to create a GCS storage bucket using that provider.
 
-Create a file named `main.tf` at the same directory as `provider.tf`.
+Copy the following content to the file `main.tf`.
+
+<walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_02/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
 
 ```tf
 resource "google_storage_bucket" "static" {
-  provider      = "google"
-  name          = "Bucket-Name"
+  provider      = google
+  name          = "auto-expiring-bucket"
+  location      = "EU"
   storage_class = "COLDLINE"
   force_destroy = true
 
@@ -79,17 +82,41 @@ resource "google_storage_bucket" "static" {
 
 __Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
 
-Verify the bucket is created in **europe-west1** in the project defined in the provider resource bloc.
+Run
+```bash
+cd ~/cloudshell_open/terraform_labs/associate/lab_02/iac
+```
+```bash
+Terraform init
+```
+```bash
+Terraform plan
+```
+**Notice** : The resource "google_storage_bucket" supports the attribute `project`which is The ID of the project in which the resource belongs. But since it is not provided, the provider project is used. You can see this in the output of the previous command.
+
+Now, let's deploy the bucket :
+```bash
+Terraform apply --auto-approve
+```
+
+Go to Google Cloud Console > Cloud Storage > Buckets and verify that the bucket is created in the project <walkthrough-project-id/>
 
 ## Override Provider attributes
 
-Let's deploy the bucket to another project in a a different location.
+Let's deploy another bucket to a different project and in a different location.
+
+<walkthrough-project-setup></walkthrough-project-setup>
+
+Add the following code to main.tf
+
+<walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_02/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
+
 
 ```tf
 resource "google_storage_bucket" "static" {
-  provider      = "google"
-  project       = "Another-Project-ID"
-  name          = "Bucket-Name"
+  provider      = google
+  project       = "<walkthrough-project-id/>"
+  name          = "auto-expiring-bucket-2"
   Location      = "europe-west1-c"
   storage_class = "COLDLINE"
   force_destroy = true
@@ -98,11 +125,20 @@ resource "google_storage_bucket" "static" {
 }
 ```
 
-**Tip** : Replace **Another-Project-ID** with a valid project id.
+**Notice**: Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
 
-Verify that the bucket is recreated in "europe-west1-c" in the right project.
+Run
+```bash
+```
+Verify that the bucket is recreated in "europe-west1-c" in the project <walkthrough-project-id/>.
 
-## Use different providers for resources
+## Cleanup
+
+```bash
+terraform destroy --auto-approve
+```
+
+## Conclusion
 Use the provider argument for every GCP resource: `google-beta` for any resource that has at least one enabled Beta feature:
 ```tf
 resource "google_container_cluster" "beta_cluster" {
@@ -120,3 +156,7 @@ resource "google_container_node_pool" "general_availability_node_pool" {
   . . .
 }
 ```
+
+You're all set!
+
+<walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
