@@ -10,7 +10,8 @@ In this lab, you'll learn how to work with Terraform **GCP Provider**.
 
 **Tip** : Socle GCP Team should tell you what project to select.
 
-Under the folder `iac`, Create a file named `provider.tf` with the following content:
+paste the following code in the file named <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_02/iac/provider.tf">provider.tf</walkthrough-editor-open-file>
+
 ```tf
 provider "google" {
   project     = "<walkthrough-project-id/>"
@@ -22,10 +23,6 @@ provider "google-beta" {
   region      = "europe-west1"
 }
 ```
-
-You can do this via Cloud Shell editor.
-
-![cloud_shell_editor](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cloudshell_editor.png)
 
 Run
 ```bash
