@@ -21,11 +21,10 @@ Steps:
  - Copy the code and paste it back to cloud shell
  - Press Enter.
 
- Select a project :
  <walkthrough-project-setup></walkthrough-project-setup>
 
 ```bash
- gcloud auth application-default set-quota-project <PROJECT_ID>
+ gcloud auth application-default set-quota-project <walkthrough-project-id/>
 ```
 **Tips**: Socle Team should tell you which project you should select.
 
