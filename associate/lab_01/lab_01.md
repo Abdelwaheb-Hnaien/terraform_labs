@@ -37,9 +37,7 @@ Run :
 export GOOGLE_APPLICATION_CREDENTIALS=<path-to-cred-file>
 ```
 
-## Connect to a GCP project
-
-<walkthrough-project-setup></walkthrough-project-setup>
+## Connect to your GCP project
 
 We have prepared a script that will do things on your behalf. Don't worry if you don't understand this for the moment.
 
@@ -52,7 +50,6 @@ Run the script:
 ```bash  
 ./associate/lab_01/setup_project.sh <walkthrough-project-name/>
 ```
-**TIPS :** don't forget to change `PROJECT_ID`. Ask Sephora Socle team if you don't have it.
 
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/associate/lab_01/setup_project.sh">
