@@ -26,6 +26,9 @@ provider "google-beta" {
 
 Run
 ```bash
+cd ~/cloudshell_open/terraform_labs/associate/lab_02/iac
+```
+```bash
 terraform init
 ```
 You should see similar output :
