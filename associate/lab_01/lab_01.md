@@ -23,6 +23,7 @@ Steps:
 
  <walkthrough-project-setup></walkthrough-project-setup>
 
+Run : 
 ```bash
  gcloud auth application-default set-quota-project <walkthrough-project-id/>
 ```
@@ -82,7 +83,7 @@ Save file 📝.
 
 Go to the working directory :
 ```bash
-cd ~/cloudshell_open/terraform_labs-0/associate/lab_01/iac
+cd ~/cloudshell_open/terraform_labs/associate/lab_01/iac
 ```
 
 Run
