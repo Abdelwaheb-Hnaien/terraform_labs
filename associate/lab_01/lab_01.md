@@ -80,6 +80,12 @@ Save file 📝.
 
 ## Run Terraform commands
 
+Go to the working directory :
+```bash
+cd ~/cloudshell_open/terraform_labs-0/associate/lab_01/iac
+```
+
+Run
 ```bash
 terraform init
 ```
