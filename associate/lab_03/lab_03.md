@@ -72,6 +72,10 @@ resource "google_bigquery_dataset" "dataset" {
   location                    = "EU"
 }
 ```
+dataset_id name should be unique in the project, to avoid potential conflict with other students we recomend you add your intials as suffix to the `dataset_id`
+.
+
+__Example__ : Jhon Do -> dataset_id = "example_dataset**_jdo"**
 
 Run
 ```bash
@@ -117,25 +121,26 @@ resource "google_bigquery_dataset" "dataset" {
 
 ```tf
 variable "dataset_id" {
-  type : string
-  description : the dataset id
+  type        = string
+  description = "the dataset id"
 }
 variable "friendly_name" {
-  type : string
-  description : Dataset display name
+  type        = string
+  description = "Dataset display name"
 }
 variable "description" {
-  type : string
-  description : Dataset description
+  type        = string
+  description = "Dataset description"
 }
 variable "location" {
-  type : string
-  description : the dataset location
-  default: "EU"
+  type        = string
+  description = "the dataset location"
+  default     = "EU"
 }
 ```
 
 Update `terraform.tfvars`
+
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/terraform.tfvars">
     Open terraform.tfvars
@@ -150,9 +155,6 @@ location      = "EU"
 
 Run
 ```bash
-terraform init
-```
-```bash
 terraform plan
 ```
 
@@ -162,14 +164,19 @@ You should see "No changes. Your infrastructure matches the configuration."
 Terraform local values (or "locals") assign a name to an expression or value. Using locals **simplifies** your Terraform configuration – since you can reference the local **multiple** times, you **reduce** duplication in your code. Locals can also help you write **more readable** configuration by using meaningful names **rather** than hard-coding values.
 
 Suppose you have a resource naming convention within your organization that says that a Bigquery Dataset should always be prefixed with the project id. You can use local variables to do so.
-Update `main.tf`
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
+    Update main.tf
+</walkthrough-editor-open-file>
+
 ```tf
 locals {
   org_dataset_id = "my-project-id-${var.dataset_id}"
 
 }
 resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = locals.org_dataset_id
+  dataset_id                  = local.org_dataset_id
   friendly_name               = var.friendly_name
   description                 = var.description
   location                    = var.location
@@ -177,11 +184,126 @@ resource "google_bigquery_dataset" "dataset" {
 ```
 Run
 ```bash
-terraform init
+terraform plan
 ```
+Since the dataset id changes, the plan output indicates that a new dataset is going to be created whereas the old dataset is going to be destroyed.
+`**Plan:** 1 to add, 0 to change, 1 to destroy.`
+
+Let's apply the change :
+```bash
+terraform apply --auto-approve
+```
+## Resource dependencies
+Let's create a table in the dataset previously created :
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
+    Update main.tf :
+</walkthrough-editor-open-file>
+
+```tf
+resource "google_bigquery_table" "default" {
+  dataset_id = google_bigquery_dataset.dataset.dataset_id
+  table_id   = "bar"
+
+  time_partitioning {
+    type = "DAY"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = <<EOF
+[
+  {
+    "name": "permalink",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The Permalink"
+  },
+  {
+    "name": "state",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "State where the head office is located"
+  }
+]
+EOF
+
+}
+```
+
+Resource dependency is simply referencing a resource in another resource definition bloc :
+
+`dataset_id = google_bigquery_dataset.dataset.dataset_id`
+
+## Data source
+you can use Data Sources to get existing resource information created in GCP by other means (other than the current terraform code).
+
+We have created a service account named 'sac-lab-terraform'. Let's use the data source `google_bigquery_default_service_account` data source to get the email address of that service account and grant it the role "Bigquery Data Viewer" to be able to access our dataset.
+
+Add the following data source to `main.tf`
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
+    Update main.tf
+</walkthrough-editor-open-file>
+
+```tf
+data "google_service_account" "lab_sa" {
+  account_id = "sac-lab-terraform"
+}
+
+resource "google_project_iam_member" "project" {
+  project = "<walkthrough-project-id/>"
+  role    = "roles/bigquery.dataViewer"
+  member  = "serviceAccount:${google_service_account.lab_sa.email}"
+}
+```
+
+Let's apply the changes:
 ```bash
 terraform plan
 ```
 ```bash
 terraform apply
 ```
+
+Go to Google Cloud console > IAM & Admin, verify that the service account has the` Bigquery Data Viewer role. (Make sure you select the project <walkthrough-project-id/>)
+
+## Terraform outputs
+
+<em>Output values make information about your infrastructure available on the command line, and can expose information for other Terraform configurations to use. Output values are similar to return values in programming languages.</em>
+
+Let's export some information about the dataset we have created in this lab. You can find the list of attributes that can be exported
+[here](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_dataset#attributes-reference).
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/outputs.tf">
+    Edit outputs.tf
+</walkthrough-editor-open-file>
+
+```tf
+output "id" {
+  value = google_bigquery_dataset.dataset.dataset_id
+}
+
+output "self_link" {
+  value = google_bigquery_dataset.dataset.self_link
+}
+```
+
+We will explore in more details how to use output values in the code in another advanced lab about Terraform modules.
+
+
+## Cleanup
+
+```bash
+terraform destroy --auto-approve
+```
+In the Google Cloud console, go to the Cloud Storage Buckets page and verify that the bucket is no longer existing.
+
+You're all set!
+
+<walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
