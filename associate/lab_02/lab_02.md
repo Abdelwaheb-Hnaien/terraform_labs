@@ -24,21 +24,22 @@ provider "google-beta" {
 }
 ```
 
-Run
+Run the following command to access the working directory :
 ```bash
 cd ~/cloudshell_open/terraform_labs/associate/lab_02/iac
 ```
+Let's initialize the providers `google`and `google-beta` :
 ```bash
 terraform init
 ```
 You should see similar output :
 ![tf_init](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_init.png)
 
-Terraform GCP provider definition block supports multiple arguments. Here for instance we specified `project` and `region`, which means all resources are going to be created in that project and in that specefic region unless it is specified differently in the resource bloc. i.e `project` and `region` in the resource bloc overrides those in the provider definition bloc.
+<em>Terraform GCP provider definition block supports multiple arguments. Here for instance we specified `project` and `region`, which means all resources are going to be created in that project and in that specefic region unless it is specified differently in the resource bloc. i.e `project` and `region` in the resource bloc overrides those in the provider definition bloc.</em>
 
 ## Provider credentials
 
-Terraform Provider supports the credentials field (Optional) that should be set to the path of a service account key file, not user account credentials file.
+Terraform Provider supports the credentials field (Optional) that should be set to the path of a service account key file, **NOT** user account credentials file.
 ```tf
 provider "google" {
   project     = "<walkthrough-project-id/>"
@@ -82,7 +83,7 @@ Copy the following content to the file `main.tf`.
 <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_02/iac/main.tf">Open main.tf</walkthrough-editor-open-file>
 
 ```tf
-resource "google_storage_bucket" "static" {
+resource "google_storage_bucket" "static_1" {
   provider      = google
   name          = "auto-expiring-bucket"
   location      = "EU"
@@ -94,20 +95,22 @@ resource "google_storage_bucket" "static" {
 ```
 **Notice**: Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
 
-__Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
+__Example__ : John Do -> Bucket name = "auto-expiring-bucket-jdo"
 
 Run
 ```bash
 terraform plan
 ```
-**Notice** : The resource "google_storage_bucket" supports the `project` attribute which is The ID of the project in which the resource belongs. But since it is not provided, the provider project is used. You can see this in the output of the previous command.
+**Notice** : The resource "google_storage_bucket" supports the `project` attribute which is The ID of the project in which the resource belongs. But since it is not provided, the provider project is used.
 
 Now, let's deploy the bucket :
 ```bash
 terraform apply --auto-approve
 ```
 
-Go to **Google Cloud Console** > **Cloud Storage** > **Buckets** and verify that the bucket is created in the project **<walkthrough-project-id/>**
+[Go to bucket list page](https://console.cloud.google.com/storage/browser?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
+
+Verify that the bucket is created successfully.
 
 ## Override Provider attributes
 
@@ -121,11 +124,11 @@ Add the following code to main.tf
 
 
 ```tf
-resource "google_storage_bucket" "static" {
+resource "google_storage_bucket" "static_2" {
   provider      = google
   project       = "<walkthrough-project-id/>"
   name          = "auto-expiring-bucket-2"
-  Location      = "europe-west1-c"
+  location      = "europe-west1"
   storage_class = "COLDLINE"
   force_destroy = true
 
@@ -133,7 +136,9 @@ resource "google_storage_bucket" "static" {
 }
 ```
 
-**Notice**: Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
+**Notice**:
+- Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
+- Rsource name should also be unique for a givin resource type. That's why the second bucket resource name is "static_2".
 
 Run
 ```bash
@@ -142,7 +147,9 @@ terraform plan
 ```bash
 terraform apply --auto-approve  
 ```
-Verify that the bucket is recreated in "europe-west1-c" in the project <walkthrough-project-id/>.
+[Go to bucket list page](https://console.cloud.google.com/storage/browser?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
+
+Verify that the bucket is created successfully.
 
 ## Cleanup
 
