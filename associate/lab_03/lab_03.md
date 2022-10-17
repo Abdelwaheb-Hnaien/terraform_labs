@@ -75,25 +75,30 @@ resource "google_bigquery_dataset" "dataset" {
 dataset_id name should be unique in the project, to avoid potential conflict with other students we recomend you add your intials as suffix to the `dataset_id`
 .
 
-__Example__ : Jhon Do -> dataset_id = "example_dataset_jdo"
+__Example__ : John Do -> dataset_id = "example_dataset_jdo"
 
-Run
+Let's access the working directory :
 ```bash
 cd ~/cloudshell_open/terraform_labs/associate/lab_03/iac/
 ```
-
+Initialize terraform :
 ```bash
 terraform init
 ```
+Plan your infrastructure :
 ```bash
 terraform plan
 ```
 You should see similar output :
 ![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_apply.png)
 
+Let's deploy the resource :
 ```bash
-terraform apply
+terraform apply --auto-approve
 ```
+[Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
+
+Verify that the dataset is created successfully.
 
 ## Use variables
 
@@ -152,9 +157,9 @@ friendly_name = "test"
 description   = "This is a test"
 location      = "EU"
 ```
-**Notice** : Make sure to keep the same `datset_id` as before (which means don't forget to add your initials).
+**Notice** : Make sure to keep the same `dataset_id` as before (which means don't forget to add your initials).
 
-__Example__ : Your name is Jhon Do -> dataset_id = "example_dataset_jdo"
+__Example__ : Your name is John Do -> dataset_id = "example_dataset_jdo"
 
 Run
 ```bash
@@ -166,7 +171,7 @@ You should see `No changes`. Your infrastructure matches the configuration."
 ## Use locals
 <em>Terraform local values (or "locals") assign a name to an expression or value. Using locals **simplifies** your Terraform configuration – since you can reference the local **multiple** times, you **reduce** duplication in your code. Locals can also help you write **more readable** configuration by using meaningful names **rather** than hard-coding values.</em>
 
-Suppose you have a resource naming convention within your organization that says that a Bigquery Dataset should always be prefixed with `some_prefix_`. You can use local variables to ensure you meet this requirement:
+We have a resource naming convention within **SEPHORA** organization that says that a Bigquery Dataset should always be prefixed with `s4a_bqd_`. We can use local variables to ensure that we meet this requirement:
 
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
@@ -175,7 +180,7 @@ Suppose you have a resource naming convention within your organization that says
 
 ```tf
 locals {
-  org_dataset_id = "some_prefix_${var.dataset_id}"
+  org_dataset_id = "s4a_bqd_${var.dataset_id}"
 
 }
 resource "google_bigquery_dataset" "dataset" {
@@ -190,12 +195,16 @@ Run
 terraform plan
 ```
 Since the dataset id changes, the plan output indicates that a new dataset will be created and the old dataset is going to be destroyed.
-`**Plan:** 1 to add, 0 to change, 1 to destroy.`
+`Plan: 1 to add, 0 to change, 1 to destroy.`
 
 Let's apply the change :
 ```bash
 terraform apply --auto-approve
 ```
+[Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
+
+Verify that the new dataset is created successfully and the old datset is deleted.
+
 ## Resource dependencies
 Let's create a table in the dataset previously created. Add the table definition to main.tf :
 
@@ -246,7 +255,9 @@ terraform plan
 terraform apply --auto-approve
 ```
 
-In **Google Cloud console > Bigquery > Select the project `<walkthrough-project-id/>` and make sure the table is created in the dataset.
+[Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
+
+Expand the dataset and verify that the table is created successfully.
 
 **Tips:** Resource dependency is simply referencing a resource in another resource definition bloc :
 
@@ -255,9 +266,9 @@ In **Google Cloud console > Bigquery > Select the project `<walkthrough-project-
 In that case, terraform will create the bigquery Dataset prior to creating the table.
 
 ## Data source
-you can use Data Sources to get existing resource information created in GCP by other means (other than the current terraform code).
+<em>You can use Data Sources to get existing resource information created in GCP by other means (other than the current terraform code).</em>
 
-We have created a service account named 'sac-lab-terraform'. Let's use the data source `google_bigquery_default_service_account` data source to get the email address of that service account and grant it the role "Bigquery Data Viewer" to be able to access our dataset.
+We have created a service account named `sac-lab-terraform`. Let's use the data source `google_service_account` data source to get the email address of that service account and grant it the role "Bigquery Data Viewer" to be able to access our dataset.
 
 Add the following data source to `main.tf`
 
@@ -286,7 +297,7 @@ terraform plan
 terraform apply --auto-approve
 ```
 
-Go to Google Cloud console > IAM & Admin, verify that the service account has the` Bigquery Data Viewer role. (Make sure you select the project <walkthrough-project-id/>)
+Go to Google Cloud console > IAM & Admin, verify that the service account has the `Bigquery Data Viewer role`. (Make sure you select the project `<walkthrough-project-id/>`)
 
 ## Terraform outputs
 
@@ -309,6 +320,16 @@ output "self_link" {
   value = google_bigquery_dataset.dataset.self_link
 }
 ```
+
+Let's apply the changes and see what we get :
+```bash
+terraform plan
+```
+```bash
+terraform apply --auto-approve
+```
+You should see similar output :
+![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/output.png)
 
 We will explore in more details how to use output values in the code in another advanced lab about Terraform modules.
 
