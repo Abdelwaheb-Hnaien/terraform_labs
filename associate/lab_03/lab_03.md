@@ -70,7 +70,6 @@ resource "google_bigquery_dataset" "dataset" {
   friendly_name               = "test"
   description                 = "This is a test"
   location                    = "EU"
-  deletion_protection        = false
 }
 ```
 dataset_id name should be unique in the project, to avoid potential conflict with other students we recomend you add your intials as suffix to the `dataset_id`
@@ -112,7 +111,6 @@ resource "google_bigquery_dataset" "dataset" {
   friendly_name               = var.friendly_name
   description                 = var.description
   location                    = var.location
-  deletion_protection         = false
 }
 ```
 
@@ -185,7 +183,6 @@ resource "google_bigquery_dataset" "dataset" {
   friendly_name               = var.friendly_name
   description                 = var.description
   location                    = var.location
-  deletion_protection         = false
 }
 ```
 Run
@@ -210,6 +207,7 @@ Let's create a table in the dataset previously created. Add the table definition
 ```tf
 resource "google_bigquery_table" "default" {
   dataset_id = google_bigquery_dataset.dataset.dataset_id
+  deletion_protection = false
   table_id   = "bar"
 
   time_partitioning {
