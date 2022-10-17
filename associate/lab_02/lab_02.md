@@ -59,6 +59,20 @@ Steps:
  - Copy the code and paste it back to cloud shell
  - Press Enter.
 
+ Run :
+ ```bash
+  gcloud auth application-default set-quota-project <walkthrough-project-id/>
+ ```
+
+ This command will add a quota project in application default credentials and saves the credentials file to a temp directory :
+
+ ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cred_path.png)
+
+ Run :
+ ```bash
+ export GOOGLE_APPLICATION_CREDENTIALS=<path-to-cred-file>
+ ```
+
 ## Use default provider attributes
 
 Let's try out to create a GCS storage bucket using that provider.
