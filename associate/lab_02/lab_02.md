@@ -10,7 +10,7 @@ In this lab, you'll learn how to work with Terraform **GCP Provider**.
 
 **Tip** : Socle GCP Team should tell you what project to select.
 
-paste the following code in the file named <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_02/iac/provider.tf">provider.tf</walkthrough-editor-open-file>
+Copy and paste the following code to the file named <walkthrough-editor-open-file filePath="cloudshell_open/terraform_labs/associate/lab_02/iac/provider.tf">provider.tf</walkthrough-editor-open-file>
 
 ```tf
 provider "google" {
@@ -75,7 +75,7 @@ Steps:
 
 ## Use default provider attributes
 
-Let's try out to create a GCS storage bucket using that provider.
+Let's try to create a GCS storage bucket using that provider.
 
 Copy the following content to the file `main.tf`.
 
@@ -98,19 +98,13 @@ __Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
 
 Run
 ```bash
-cd ~/cloudshell_open/terraform_labs/associate/lab_02/iac
-```
-```bash
-Terraform init
-```
-```bash
-Terraform plan
+terraform plan
 ```
 **Notice** : The resource "google_storage_bucket" supports the attribute `project`which is The ID of the project in which the resource belongs. But since it is not provided, the provider project is used. You can see this in the output of the previous command.
 
 Now, let's deploy the bucket :
 ```bash
-Terraform apply --auto-approve
+terraform apply --auto-approve
 ```
 
 Go to Google Cloud Console > Cloud Storage > Buckets and verify that the bucket is created in the project <walkthrough-project-id/>
@@ -143,6 +137,10 @@ resource "google_storage_bucket" "static" {
 
 Run
 ```bash
+terraform plan  
+```
+```bash
+terraform apply --auto-approve  
 ```
 Verify that the bucket is recreated in "europe-west1-c" in the project <walkthrough-project-id/>.
 
