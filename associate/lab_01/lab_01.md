@@ -112,9 +112,10 @@ Optionally you can add the `--auto-approve` flag to the previous command to skip
 
 This can be usefull when running `terraform apply` command in CICD pipelines.
 
-In the Google Cloud console, go to the Cloud Storage > Bucket and verify that the bucket is created successfully (make sure you are in the right project).
 
 [Go to bucket list page](https://console.cloud.google.com/storage/browser?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
+
+Verify that the bucket is created successfully.
 
 ## Inspect Terraform tfstate
 
