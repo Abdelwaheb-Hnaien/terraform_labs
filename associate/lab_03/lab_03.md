@@ -57,7 +57,7 @@ provider "google" {
 }
 ```
 
-Now, let's declare the resource, edit
+Now, let's declare the resource :
 
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
@@ -75,7 +75,7 @@ resource "google_bigquery_dataset" "dataset" {
 dataset_id name should be unique in the project, to avoid potential conflict with other students we recomend you add your intials as suffix to the `dataset_id`
 .
 
-__Example__ : Jhon Do -> dataset_id = "example_dataset**_jdo"**
+__Example__ : Jhon Do -> dataset_id = "example_dataset_jdo"
 
 Run
 ```bash
@@ -88,12 +88,12 @@ terraform init
 ```bash
 terraform plan
 ```
+You should see similar output :
+![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_apply.png)
+
 ```bash
 terraform apply
 ```
-
-You should see similar output :
-![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_apply.png)
 
 ## Use variables
 
@@ -152,18 +152,21 @@ friendly_name = "test"
 description   = "This is a test"
 location      = "EU"
 ```
+**Notice** : Make sure to keep the same `datset_id` as before (which means don't forget to add your initials).
+
+__Example__ : Your name is Jhon Do -> dataset_id = "example_dataset_jdo"
 
 Run
 ```bash
 terraform plan
 ```
 
-You should see "No changes. Your infrastructure matches the configuration."
+You should see `No changes`. Your infrastructure matches the configuration."
 
 ## Use locals
-Terraform local values (or "locals") assign a name to an expression or value. Using locals **simplifies** your Terraform configuration – since you can reference the local **multiple** times, you **reduce** duplication in your code. Locals can also help you write **more readable** configuration by using meaningful names **rather** than hard-coding values.
+<em>Terraform local values (or "locals") assign a name to an expression or value. Using locals **simplifies** your Terraform configuration – since you can reference the local **multiple** times, you **reduce** duplication in your code. Locals can also help you write **more readable** configuration by using meaningful names **rather** than hard-coding values.</em>
 
-Suppose you have a resource naming convention within your organization that says that a Bigquery Dataset should always be prefixed with the project id. You can use local variables to do so.
+Suppose you have a resource naming convention within your organization that says that a Bigquery Dataset should always be prefixed with `some_prefix_`. You can use local variables to ensure you meet this requirement:
 
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
@@ -172,7 +175,7 @@ Suppose you have a resource naming convention within your organization that says
 
 ```tf
 locals {
-  org_dataset_id = "my-project-id-${var.dataset_id}"
+  org_dataset_id = "some_prefix_${var.dataset_id}"
 
 }
 resource "google_bigquery_dataset" "dataset" {
@@ -186,7 +189,7 @@ Run
 ```bash
 terraform plan
 ```
-Since the dataset id changes, the plan output indicates that a new dataset is going to be created whereas the old dataset is going to be destroyed.
+Since the dataset id changes, the plan output indicates that a new dataset will be created and the old dataset is going to be destroyed.
 `**Plan:** 1 to add, 0 to change, 1 to destroy.`
 
 Let's apply the change :
@@ -194,7 +197,7 @@ Let's apply the change :
 terraform apply --auto-approve
 ```
 ## Resource dependencies
-Let's create a table in the dataset previously created :
+Let's create a table in the dataset previously created. Add the table definition to main.tf :
 
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
@@ -234,9 +237,21 @@ EOF
 }
 ```
 
-Resource dependency is simply referencing a resource in another resource definition bloc :
+```bash
+terraform plan
+```
+
+```bash
+terraform apply --auto-approve
+```
+
+In **Google Cloud console > Bigquery > Select the project `<walkthrough-project-id/>` and make sure the table is created in the dataset.
+
+**Tips:** Resource dependency is simply referencing a resource in another resource definition bloc :
 
 `dataset_id = google_bigquery_dataset.dataset.dataset_id`
+
+In that case, terraform will create the bigquery Dataset prior to creating the table.
 
 ## Data source
 you can use Data Sources to get existing resource information created in GCP by other means (other than the current terraform code).
@@ -258,7 +273,7 @@ data "google_service_account" "lab_sa" {
 resource "google_project_iam_member" "project" {
   project = "<walkthrough-project-id/>"
   role    = "roles/bigquery.dataViewer"
-  member  = "serviceAccount:${google_service_account.lab_sa.email}"
+  member  = "serviceAccount:${data.google_service_account.lab_sa.email}"
 }
 ```
 
@@ -267,7 +282,7 @@ Let's apply the changes:
 terraform plan
 ```
 ```bash
-terraform apply
+terraform apply --auto-approve
 ```
 
 Go to Google Cloud console > IAM & Admin, verify that the service account has the` Bigquery Data Viewer role. (Make sure you select the project <walkthrough-project-id/>)

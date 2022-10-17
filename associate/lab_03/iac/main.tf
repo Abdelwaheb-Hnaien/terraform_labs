@@ -1,1 +1,0 @@
-# resource definition file
