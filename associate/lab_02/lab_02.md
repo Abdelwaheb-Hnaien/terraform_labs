@@ -100,14 +100,14 @@ Run
 ```bash
 terraform plan
 ```
-**Notice** : The resource "google_storage_bucket" supports the attribute `project`which is The ID of the project in which the resource belongs. But since it is not provided, the provider project is used. You can see this in the output of the previous command.
+**Notice** : The resource "google_storage_bucket" supports the `project` attribute which is The ID of the project in which the resource belongs. But since it is not provided, the provider project is used. You can see this in the output of the previous command.
 
 Now, let's deploy the bucket :
 ```bash
 terraform apply --auto-approve
 ```
 
-Go to Google Cloud Console > Cloud Storage > Buckets and verify that the bucket is created in the project <walkthrough-project-id/>
+Go to **Google Cloud Console** > **Cloud Storage** > **Buckets** and verify that the bucket is created in the project **<walkthrough-project-id/>**
 
 ## Override Provider attributes
 
