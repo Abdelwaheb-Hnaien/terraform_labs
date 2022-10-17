@@ -67,7 +67,7 @@ Files in this directory are intended to deploy a GCS bucket to Google Cloud.
 ## Make changes to the code
 Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
 
-__Example__ : Jhon Do -> Bucket name = "auto-expiring-bucket**-jdo"**
+__Example__ : John Do -> Bucket name = "auto-expiring-bucket-jdo"
 
 ```tf
 resource "google_storage_bucket" "auto-expire" {
@@ -108,11 +108,13 @@ It's time now to create the resources describe by our IaC. To do this run:
 ```bash
 terraform apply
 ```
-Optioanally you can add the `--auto-approve` flag to the previous command to skip the approving prompt.
+Optionally you can add the `--auto-approve` flag to the previous command to skip the approving prompt.
 
 This can be usefull when running `terraform apply` command in CICD pipelines.
 
 In the Google Cloud console, go to the Cloud Storage > Bucket and verify that the bucket is created successfully (make sure you are in the right project).
+
+[Go to bucket list page](https://console.cloud.google.com/storage/browser?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
 
 ## Inspect Terraform tfstate
 
