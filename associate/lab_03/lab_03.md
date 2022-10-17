@@ -70,6 +70,7 @@ resource "google_bigquery_dataset" "dataset" {
   friendly_name               = "test"
   description                 = "This is a test"
   location                    = "EU"
+  deletion_protection        = false
 }
 ```
 dataset_id name should be unique in the project, to avoid potential conflict with other students we recomend you add your intials as suffix to the `dataset_id`
@@ -111,6 +112,7 @@ resource "google_bigquery_dataset" "dataset" {
   friendly_name               = var.friendly_name
   description                 = var.description
   location                    = var.location
+  deletion_protection         = false
 }
 ```
 
@@ -183,6 +185,7 @@ resource "google_bigquery_dataset" "dataset" {
   friendly_name               = var.friendly_name
   description                 = var.description
   location                    = var.location
+  deletion_protection         = false
 }
 ```
 Run
