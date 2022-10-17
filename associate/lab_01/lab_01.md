@@ -49,7 +49,7 @@ chmod +x associate/lab_01/setup_project.sh
 
 Run the script:
 ```bash  
-./associate/lab_01/setup_project.sh <walkthrough-project-name/>
+./associate/lab_01/setup_project.sh <walkthrough-project-id/>
 ```
 
 <walkthrough-editor-open-file
@@ -112,7 +112,7 @@ Optioanally you can add the `--auto-approve` flag to the previous command to ski
 
 This can be usefull when running `terraform apply` command in CICD pipelines.
 
-In the Google Cloud console, go to the Cloud Storage Bucket list page and verify that the bucket is created successfully (make sure you are in the right project).
+In the Google Cloud console, go to the Cloud Storage > Bucket and verify that the bucket is created successfully (make sure you are in the right project).
 
 ## Inspect Terraform tfstate
 

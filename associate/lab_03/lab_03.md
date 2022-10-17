@@ -9,48 +9,61 @@ In this lab, we will see :
   - Outputs
   - Resource dependencies
 
-## Set up authentication
+  ## Set up authentication
 
-First we need to authenticate and access our project
-```bash
-gcloud auth application-default login --no-launch-browser
-```
-Steps:
- - Answer **Yes** when prompted
- - Click the link that appears
- - Chose your account **(Make sure to select your Sephora account)**
- - Click allow
- - Copy the code and paste it back to cloud shell
- - Press Enter.
+  First we need to authenticate and access our project
+  ```bash
+  gcloud auth application-default login --no-launch-browser
+  ```
+  Steps:
+   - Answer **Yes** when prompted
+   - Click the link that appears
+   - Chose your account **(Make sure to select your Sephora account)**
+   - Click allow
+   - Copy the code and paste it back to cloud shell
+   - Press Enter.
 
-```bash
- gcloud auth application-default set-quota-project <PROJECT_ID>
-```
-**Tips**: Socle Team should provide you with the PROJECT_ID value.
+   <walkthrough-project-setup></walkthrough-project-setup>
 
-This command will add a quota project in application default credentials and saves the credentials file to a temp directory :
+  Run :
+  ```bash
+   gcloud auth application-default set-quota-project <walkthrough-project-id/>
+  ```
+  **Tips**: Socle Team should tell you which project you should select.
 
-![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cred_path.png)
+  This command will add a quota project in application default credentials and saves the credentials file to a temp directory :
 
-Run :
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS=<path-to-cred-file>
-```
+  ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cred_path.png)
+
+  Run :
+  ```bash
+  export GOOGLE_APPLICATION_CREDENTIALS=<path-to-cred-file>
+  ```
 
 ## Deploy resource
 Let's use what we have learned in previous labs to create a bigquery dataset.
 
-Decalre the provider first. Create a file named `provider.tf` under the folder `iac` with the following content:
+Edit provider.tf and add the following bloc :
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/provider.tf">
+    Open provider.tf
+</walkthrough-editor-open-file>
+
 ```tf
 provider "google" {
-  project     = "PROJECT-ID"
+  project     = "<walkthrough-project-id/>"
   region      = "europe-west1"
 }
 ```
-**Tip** : Replace **PROJECT-ID** with a valid project id.
 
-Now, let's declare the resource :
-Create `lab_03/iac/main.tf`:
+Now, let's declare the resource, edit
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
+    Open main.tf
+</walkthrough-editor-open-file>
+
 ```tf
 resource "google_bigquery_dataset" "dataset" {
   dataset_id                  = "example_dataset"
@@ -60,14 +73,11 @@ resource "google_bigquery_dataset" "dataset" {
 }
 ```
 
-You can do this via Cloud Shell editor.
-
-![cloud_shell_editor](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/cloudshell_editor.png)
-
 Run
 ```bash
-cd associate/lab_03/iac/
+cd ~/cloudshell_open/terraform_labs/associate/lab_03/iac/
 ```
+
 ```bash
 terraform init
 ```
@@ -86,6 +96,11 @@ You should see similar output :
 Let's make the code looks better by using variables.
 
 Update `main.tf`
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
+    Open main.tf
+</walkthrough-editor-open-file>
+
 ```tf
 resource "google_bigquery_dataset" "dataset" {
   dataset_id                  = var.dataset_id
@@ -95,7 +110,10 @@ resource "google_bigquery_dataset" "dataset" {
 }
 ```
 
-Create a file `varibales.tf`
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/variables.tf">
+    Open variables.tf
+</walkthrough-editor-open-file>
 
 ```tf
 variable "dataset_id" {
@@ -117,7 +135,11 @@ variable "location" {
 }
 ```
 
-Create a file `terraform.tfvars`
+Update `terraform.tfvars`
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/terraform.tfvars">
+    Open terraform.tfvars
+</walkthrough-editor-open-file>
 
 ```tf
 dataset_id    = "example_dataset"
