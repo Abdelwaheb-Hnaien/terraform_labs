@@ -279,7 +279,7 @@ Add the following data source to `main.tf`
 
 ```tf
 data "google_service_account" "lab_sa" {
-  account_id = "sac-lab-terraform"
+  account_id = "sac-labo-training"
 }
 
 resource "google_project_iam_member" "project" {
