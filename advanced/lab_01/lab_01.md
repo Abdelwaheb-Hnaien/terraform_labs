@@ -2,7 +2,8 @@
 ## Introduction
 ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/sephora_terraform_bw.png)
 
-This lab is about setting resource behaviour using the special nested **lifecycle** block within a resource block body.
+In this lab you will explore :
+- Terraform **lifecycle** .
 
 ## Set up authentication
 
@@ -38,13 +39,10 @@ This lab is about setting resource behaviour using the special nested **lifecycl
 ## Deploy resource
 Let's deploy some resources:
 
-Edit provider.tf and add the following bloc :
-
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/provider.tf">
-    Open provider.tf
+    Edit provider.tf
 </walkthrough-editor-open-file>
-
 ```tf
 provider "google" {
   project     = "<walkthrough-project-id/>"
@@ -52,13 +50,10 @@ provider "google" {
 }
 ```
 
-Edit main.tf
-
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
-    Open main.tf
+    Edit main.tf
 </walkthrough-editor-open-file>
-
 ```tf
 # Bigquery Dataset
 resource "google_bigquery_dataset" "dataset" {
@@ -66,6 +61,9 @@ resource "google_bigquery_dataset" "dataset" {
   friendly_name               = "test"
   description                 = "This is a test"
   location                    = "EU"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # GCS Bucket
@@ -73,15 +71,20 @@ resource "google_storage_bucket" "static-site" {
   name          = "tf_ad_lab_gcs"
   location      = "EU"
   force_destroy = true
+  storage_class = "STANDARD"
 
   uniform_bucket_level_access = true
+
+  lifecycle {
+    ignore_changes = ["storage_class"]
+  }
 }
 ```
 
-dataset_id and bucket name should be unique in the project, to avoid potential conflict with other students we recommend you to add your intials as suffix.
+**Tips** : dataset_id and bucket name should be unique in the project, to avoid potential conflict with other students we recommend you to add your intials as suffix.
 .
 
-__Example__ : John Do -> dataset_id = "tf_ad_lab_bqd_jdo"
+_*Example*_ : John Do -> dataset_id = "tf_ad_lab_bqd_jdo"
 
 Let's access the working directory :
 ```bash
@@ -96,7 +99,7 @@ Plan your infrastructure :
 terraform plan
 ```
 You should see similar output :
-![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_apply.png)
+![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_01/tf_plan.png)
 
 Let's deploy the resource :
 ```bash
@@ -105,3 +108,26 @@ terraform apply --auto-approve
 [Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
 
 Verify that the bucket and the dataset are created successfully.
+
+
+<walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
+
+## Editing resources
+
+Suppose that you have accidentely changed the name of the bigquery dataset.  
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
+    Edit main.tf
+</walkthrough-editor-open-file>
+
+Run:
+```bash
+terraform init
+```
+```bash
+terraform plan
+```
+```bash
+terraform apply --auto-approve
+```
