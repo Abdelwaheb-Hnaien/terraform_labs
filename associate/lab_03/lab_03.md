@@ -9,7 +9,7 @@ In this lab, we will see :
   - Outputs
   - Resource dependencies
 
-  ## Set up authentication
+## Set up authentication
 
   First we need to authenticate and access our project
   ```bash
@@ -72,7 +72,7 @@ resource "google_bigquery_dataset" "dataset" {
   location                    = "EU"
 }
 ```
-dataset_id name should be unique in the project, to avoid potential conflict with other students we recomend you add your intials as suffix to the `dataset_id`
+dataset_id name should be unique in the project, to avoid potential conflict with other students we recommend you add your intials as suffix to the `dataset_id`
 .
 
 __Example__ : John Do -> dataset_id = "example_dataset_jdo"
