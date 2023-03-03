@@ -149,7 +149,7 @@ terraform plan
 ```
 
 You should see the following output :
-![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_01/tf_plan_create_before_destroy.png)
+`Plan: 1 to add, 0 to change, 1 to destroy.`
 
 **Notice** : By default, when Terraform must change a resource argument that cannot be updated in-place due to remote API limitations, Terraform will instead destroy the existing object and then create a new replacement object with the new configured arguments.
 
