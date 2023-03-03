@@ -102,16 +102,19 @@ Let's deploy the resource :
 ```bash
 terraform apply --auto-approve
 ```
-[Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
 
 Verify that the bucket and the dataset are created successfully.
 
+[Bigquery Datasets list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
 
-<walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
+[Buckets list page](https://console.cloud.google.com/storage/browser?hl=fr&project=<walkthrough-project-id/>)
+
 
 ## Editing Bigquery Dataset resource
 
 Suppose that you have accidentely changed the name of the bigquery dataset. Terraform will delete the current dataset and then create the new one.
+
+Let's do this, try to add a random string to the name of the bucket.
 
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
@@ -119,9 +122,7 @@ Suppose that you have accidentely changed the name of the bigquery dataset. Terr
 </walkthrough-editor-open-file>
 
 Run:
-```bash
-terraform init
-```
+
 ```bash
 terraform plan
 ```
@@ -142,9 +143,7 @@ lifecycle {
 ```
 
 Run:
-```bash
-terraform init
-```
+
 ```bash
 terraform plan
 ```
@@ -156,11 +155,18 @@ You should see the following output :
 
 The `create_before_destroy` meta-argument changes this behavior so that the new replacement object is created first, and the prior object is destroyed after the replacement is created.
 
+Run:
+```
+terraform apply --auto-approve
+```
+
 ## Change the Storage Bucket configuration
 
-Let's change manually the storage class of the GCS bucket you have previously created with Terraform.
+Let's manually change the storage class of the GCS bucket you have previously created with Terraform.
 
-[Go to bucket list page](https://console.cloud.google.com/storage/browser?hl=fr&project=<walkthrough-project-id/>) > CONFIGURATION > Default storage class.
+[Go to bucket list page](https://console.cloud.google.com/storage/browser?hl=fr&project=<walkthrough-project-id/>).
+
+Locate your bucket > CONFIGURATION > Default storage class > Edit
 
 Set the storage class to `Nearline`.
 
@@ -170,10 +176,10 @@ Run:
 terraform plan
 ```
 
-Notice That Terraform will revert the changes you have done manually :
+**Notice**: Terraform will tell you that it will revert the changes you have done manually :
 ![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_01/plan_revert.png)
 
-Let's edit the gcs bucket resource and add the dfollowing lifecycle :
+Let's edit the gcs bucket resource and add the following lifecycle :
 ```
   lifecycle {
     ignore_changes = [storage_class]
@@ -184,7 +190,7 @@ Run:
 ```
 terraform plan
 ```
-Terraform will says : that your infrastructure matches the configuration and there is nothing to change.
+Terraform will say that your infrastructure matches the configuration and there is nothing to change.
 
 **Notice**:  By default, Terraform detects any difference in the current settings of a real infrastructure object and plans to update the remote object to match configuration.
 
@@ -198,7 +204,7 @@ Run :
 terraform destroy --auto-approve
 ```
 
-## Conclusion
+## End of the lab
 
 You're all set!
 
