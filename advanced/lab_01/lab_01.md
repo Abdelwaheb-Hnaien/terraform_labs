@@ -196,10 +196,119 @@ Terraform will say that your infrastructure matches the configuration and there 
 
 The `ignore_changes` feature is intended to be used when a resource is created with references to data that may change in the future, but should not affect said resource after its creation. In some rare cases, settings of a remote object are modified by processes outside of Terraform, which Terraform would then attempt to "fix" on the next run. In order to make Terraform share management responsibilities of a single object with a separate process, the `ignore_changes` meta-argument specifies resource attributes that Terraform should ignore when planning updates to the associated remote object.
 
+## Redeploy resource depending on other ressource attribute change
+
+In this section we will deploy a Google Cloud Function using terraform.
+Edit main.tf and add the following resources.
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
+    Edit main.tf
+</walkthrough-editor-open-file>
+```tf
+/*
+* Google Cloud Function
+*/
+
+data "archive_file" "gcf_src" {
+  type        = "zip"
+  source_dir  = "../src"
+  output_path = "../src/src.zip"
+}
+
+
+resource "google_storage_bucket_object" "archive" {
+  name   = "src.zip"
+  bucket = google_storage_bucket.static-site.name
+  source = data.archive_file.gcf_src.output_path
+}
+
+resource "google_cloudfunctions_function" "function" {
+  name        = "function-test"
+  description = "My function"
+  runtime     = "python39"
+
+  available_memory_mb   = 128
+  source_archive_bucket =google_storage_bucket.static-site.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  trigger_http          = true
+  entry_point           = "say_hello"
+}
+```
+```bash
+terraform init
+```
+
+```bash
+terraform plan
+```
+
+The plan should tell you : 2 to add, 0 to change, 0 to destroy.
+
+```bash
+terraform apply --auto-approve
+```
+
+### Change the source code of the cloud function
+
+Let's edit function source code and make some changes.
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/advanced/lab_01/src/main.py">
+    Edit main.py
+</walkthrough-editor-open-file>
+```python
+def say_hello(request):
+    print("Hello Sephora") # some changes goes here
+```
+
+```bash
+terraform plan
+```
+
+The plan sould says: **No changes. Your infrastructure matches the configuration.**
+
+Terraform says that your infrastructure matches the configuration yet we changed the source code of the application. This happens because the zipped source file is still name "src.zip", neither the name of the output file nor the location has been changed, it is the reason why Terraform can't catch the change. However some hidden attributes related to the resource are going to be changes, for instance the _*md5hash*_ of the archive file, we can make use of that to explicitely tell Terraform to trigger function replacement whenever this attribute changes. We can do this by adding the following block to the cloud function resource definiton.
+ <walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
+    Edit main.tf
+</walkthrough-editor-open-file>
+
+```tf
+  lifecycle {
+    replace_triggered_by = [
+      google_storage_bucket_object.archive.md5hash
+    ]
+  }
+```
+```bash
+terraform plan
+```
+
+```bash
+terraform apply
+```
+
+The plan should says : **2 to add, 0 to change, 2 to destroy.**
+
+The following resources are going to be replaced:
+- google_storage_bucket_object.archive
+- google_cloudfunctions_function.function
+
+More information about the exported attributes related to the resource storage_bucket_object : https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object#attributes-reference
+
 ## Clean up
 
 You finished the lab, let's clean resources:
-Run :
+
+First you need to update the lifecycle attribute **prevent_destroy** of the bigquery dataset and set it to false.
+
+Apply changes:
+```bash
+terraform apply --auto-approve
+```
+
+and then
+
 ```bash
 terraform destroy --auto-approve
 ```
