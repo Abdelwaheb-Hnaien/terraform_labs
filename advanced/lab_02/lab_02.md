@@ -236,7 +236,7 @@ terraform apply --auto-approve
 
 the plan should tell you : 4 to add, 0 to change, 0 to destroy.
 
-** Notice **: The foreach meta-argument in Terraform is used to iterate over a list, set, or map and create multiple instances of a resource or module based on the elements of the collection. It allows you to dynamically generate resources or modules by repeating a block of code for each element in the collection. It offers more flexibility in defining the resource object in a variable and easily access the different attributes within it.
+**Notice**: The foreach meta-argument in Terraform is used to iterate over a list, set, or map and create multiple instances of a resource or module based on the elements of the collection. It allows you to dynamically generate resources or modules by repeating a block of code for each element in the collection. It offers more flexibility in defining the resource object in a variable and easily access the different attributes within it.
 
 ## Clean up
 
