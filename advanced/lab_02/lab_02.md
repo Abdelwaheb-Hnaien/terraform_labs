@@ -6,6 +6,8 @@ In this lab you will learn about the following Terraform **meta-arguments**:
 - count
 - depends_on
 - foreach
+- toset
+
 We will also take a look on how to chain resources when using foreach.
 
 ## Set up authentication
@@ -46,7 +48,7 @@ When each instance is created, it has its own distinct infrastructure object ass
 Let's see how it works:
 
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/provider.tf">
+    filePath="cloudshell_open/terraform_labs/advanced/lab_02/iac/provider.tf">
     Edit provider.tf
 </walkthrough-editor-open-file>
 ```tf
@@ -57,38 +59,26 @@ provider "google" {
 ```
 
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
+    filePath="cloudshell_open/terraform_labs/advanced/lab_02/iac/main.tf">
     Edit main.tf
 </walkthrough-editor-open-file>
 ```tf
-# Bigquery Dataset
-resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = "tf_ad_lab_bqd"
-  friendly_name               = "test"
-  description                 = "This is a test"
-  location                    = "EU"
-}
-
-# GCS Bucket
-resource "google_storage_bucket" "static-site" {
-  name          = "tf_ad_lab_gcs"
-  location      = "EU"
-  force_destroy = true
+resource "google_storage_bucket" "bucket" {
+  count       = 3
+  name        = "tf-lab-advabced-bucket-${count.index}"
+  location    = "us-central1"
   storage_class = "STANDARD"
-
-  uniform_bucket_level_access = true
-
 }
 ```
 
-**Tips** : dataset_id and bucket name should be unique in the project, to avoid potential conflict with other students we recommend you to add your intials as suffix.
+**Tips** : Bucket name should be unique in the project, to avoid potential conflict with other students we recommend you to add your intials as suffix.
 .
 
-_*Example*_ : John Do -> dataset_id = "tf_ad_lab_bqd_jdo"
+_*Example*_ : John Do -> name = "tf-lab-advabced-bucket-${count.index}-jdo"
 
 Let's access the working directory :
 ```bash
-cd ~/cloudshell_open/terraform_labs/advanced/lab_01/iac/
+cd ~/cloudshell_open/terraform_labs/advanced/lab_02/iac/
 ```
 Initialize terraform :
 ```bash
@@ -98,70 +88,85 @@ Plan your infrastructure :
 ```bash
 terraform plan
 ```
-You should see similar output :
-![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_01/tf_plan.png)
+Terraform should tell you that 3 buckets are going to be deployed in your project :
+![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_02/tfplan_count.png)
 
 Let's deploy the resource :
 ```bash
 terraform apply --auto-approve
 ```
 
-Verify that the bucket and the dataset are created successfully.
-
-[Bigquery Datasets list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
+Verify that the buckets are created successfully.
 
 [Buckets list page](https://console.cloud.google.com/storage/browser?hl=fr&project=<walkthrough-project-id/>)
 
+**Notice**: The count.index variable is a special variable that represents the current index of an iteration when using the count meta-argument.
 
-## Editing Bigquery Dataset resource
+In the example we provided earlier, we used count.index to dynamically generate the bucket names. Let's take a closer look at how it works:
 
-Suppose that you have accidentely changed the name of the bigquery dataset. Terraform will delete the current dataset and then create the new one.
+In this code snippet, we set count to 3, indicating that we want to create three instances of the google_storage_bucket resource.
 
-Let's do this, try to add a random string to the name of the bucket.
+Inside the resource block, we use the name parameter to generate the bucket names dynamically. By appending ${count.index} to the static part of the name, we create unique bucket names for each iteration. The value of count.index starts from 0 and increments by 1 for each iteration.
+
+Here's how the bucket names will be generated in this case:
+
+- First iteration: "tf-lab-advabced-bucket-0"
+- Second iteration: "tf-lab-advabced-bucket-1"
+- Third iteration: "tf-lab-advabced-bucket-2"
+
+By leveraging count.index, you can create resources with dynamically generated names, tags, labels, or any other attribute that requires uniqueness or variation based on the iteration index.
+
+Keep in mind that you can also use other expressions and functions in conjunction with count.index to further customize your resource configurations.
+
+## How to use depends_on meta-argument:
+
+The **depends_on** meta-argument is used in Terraform to define explicit dependencies between resources. It allows you to specify that one resource depends on the successful creation or modification of another resource.
+
+Example:
 
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
+    filePath="cloudshell_open/terraform_labs/advanced/lab_02/iac/main.tf">
     Edit main.tf
 </walkthrough-editor-open-file>
 
+```tf
+resource "google_project_service" "bigquery" {
+  service = "bigquery.googleapis.com"
+}
+
+resource "google_bigquery_dataset" "dataset" {
+  dataset_id = "my-dataset"
+  location   = "EU"
+  depends_on    = [google_project_service.bigquery]
+}
+```
+
+**Tips** : Dataset_id should be unique in the project, to avoid potential conflict with other students we recommend you to add your intials as suffix.
+.
+
+_*Example*_ : John Do -> dataset_id = "my-dataset-jdo"
+
+**Notice**: We have two resources: `google_project_service` and `google_bigquery_dataset`. The `google_project_service` resource enables the BigQuery API for your GCP project, and the `google_bigquery_dataset` resource deploys a BigQuery dataset.
+
+we use the **depends_on** meta-argument in the google_bigquery_dataset resource block. The value of depends is set to `[google_project_service.bigquery]`, indicating that the dataset resource depends on the google_project_service.bigquery resource.
+
+With this configuration, Terraform will enable the BigQuery API for your project before attempting to deploy the BigQuery dataset. It establishes the correct order of operations based on the defined dependency.
+
 Run:
+
+```bash
+terraform init
+```
 
 ```bash
 terraform plan
 ```
 
-You should get the following error :
-![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_01/plan_error.png)
-
-**Notice** : The meta-argument `prevent_destroy` set to true will cause Terraform to reject with an error any plan that would destroy the infrastructure object associated with the resource, as long as the argument remains present in the configuration.
-
-This can be used as a measure of safety against the accidental replacement of objects that may be costly to reproduce, such as database instances. However, it will make certain configuration changes impossible to apply, and will prevent the use of the terraform destroy command once such objects are created, and so this option should be used sparingly.
-
-Now let's update the lifecycle;
-
-```
-lifecycle {
-    create_before_destroy = true
-  }
-```
-
-Run:
-
 ```bash
-terraform plan
-```
-
-You should see the following output :
-`Plan: 1 to add, 0 to change, 1 to destroy.`
-
-**Notice** : By default, when Terraform must change a resource argument that cannot be updated in-place due to remote API limitations, Terraform will instead destroy the existing object and then create a new replacement object with the new configured arguments.
-
-The `create_before_destroy` meta-argument changes this behavior so that the new replacement object is created first, and the prior object is destroyed after the replacement is created.
-
-Run:
-```
 terraform apply --auto-approve
 ```
+
+The Plan should says: 2 to add, 0 to change, 0 to destroy.
 
 ## Change the Storage Bucket configuration
 
