@@ -6,7 +6,6 @@ In this lab you will learn about the following Terraform **meta-arguments**:
 - count
 - depends_on
 - foreach
-- toset
 
 We will also take a look on how to chain resources when using foreach.
 
@@ -168,79 +167,60 @@ terraform apply --auto-approve
 
 The Plan should says: 2 to add, 0 to change, 0 to destroy.
 
-## Change the Storage Bucket configuration
+## How to use foreach in terraform
 
-Let's manually change the storage class of the GCS bucket you have previously created with Terraform.
+In this section we will see how to deploy multiple secrets in your project using foreach.
 
-[Go to bucket list page](https://console.cloud.google.com/storage/browser?hl=fr&project=<walkthrough-project-id/>).
+Let's edit main.tf and add the folowing resources:
 
-Locate your bucket > CONFIGURATION > Default storage class > Edit
-
-Set the storage class to `Nearline`.
-
-Run:
-
-```bash
-terraform plan
-```
-
-**Notice**: Terraform will tell you that it will revert the changes you have done manually :
-![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_01/plan_revert.png)
-
-Let's edit the gcs bucket resource and add the following lifecycle :
-```
-  lifecycle {
-    ignore_changes = [storage_class]
-  }
-```
-
-Run:
-```
-terraform plan
-```
-Terraform will say that your infrastructure matches the configuration and there is nothing to change.
-
-**Notice**:  By default, Terraform detects any difference in the current settings of a real infrastructure object and plans to update the remote object to match configuration.
-
-The `ignore_changes` feature is intended to be used when a resource is created with references to data that may change in the future, but should not affect said resource after its creation. In some rare cases, settings of a remote object are modified by processes outside of Terraform, which Terraform would then attempt to "fix" on the next run. In order to make Terraform share management responsibilities of a single object with a separate process, the `ignore_changes` meta-argument specifies resource attributes that Terraform should ignore when planning updates to the associated remote object.
-
-## Redeploy resource depending on other ressource attribute change
-
-In this section we will deploy a Google Cloud Function using terraform.
-Edit main.tf and add the following resources.
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
+    filePath="cloudshell_open/terraform_labs/advanced/lab_02/iac/main.tf">
     Edit main.tf
 </walkthrough-editor-open-file>
+
 ```tf
-/*
-* Google Cloud Function
-*/
-
-data "archive_file" "gcf_src" {
-  type        = "zip"
-  source_dir  = "../src"
-  output_path = "../src/src.zip"
+provider "google" {
+  project     = "test-ahn-dev"
+  region      = "europe-west1"
 }
 
+variable "secrets" {
+  type    = map(object({
+    location  = string
+    value     = string
+  }))
+  default = {
+    "my-secret-a" = {
+        location = "europe-west1",
+        value    = "my-secret-a-value"
+    }
+     "my-secret-b" : {
+        location = "europe-west1",
+        value    = "my-secret-b-value"
+    }
 
-resource "google_storage_bucket_object" "archive" {
-  name   = "src.zip"
-  bucket = google_storage_bucket.static-site.name
-  source = data.archive_file.gcf_src.output_path
+  }
 }
 
-resource "google_cloudfunctions_function" "function" {
-  name        = "function-test"
-  description = "My function"
-  runtime     = "python39"
+resource "google_secret_manager_secret" "secret" {
+  for_each = var.secrets
+  secret_id = each.key
+  replication {
+    user_managed {
+        replicas {
+            location = each.value.location
+        }
 
-  available_memory_mb   = 128
-  source_archive_bucket =google_storage_bucket.static-site.name
-  source_archive_object = google_storage_bucket_object.archive.name
-  trigger_http          = true
-  entry_point           = "say_hello"
+    }
+  }
 }
+
+resource "google_secret_manager_secret_version" "version" {
+  for_each                    = var.secrets
+  secret                   = google_secret_manager_secret.secret[each.key].id
+  secret_data                 = each.value.value
+}
+
 ```
 ```bash
 terraform init
@@ -250,72 +230,17 @@ terraform init
 terraform plan
 ```
 
-The plan should tell you : 2 to add, 0 to change, 0 to destroy.
-
 ```bash
 terraform apply --auto-approve
 ```
 
-### Change the source code of the cloud function
+the plan should tell you : 4 to add, 0 to change, 0 to destroy.
 
-Let's edit function source code and make some changes.
-
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_01/src/main.py">
-    Edit main.py
-</walkthrough-editor-open-file>
-```python
-def say_hello(request):
-    print("Hello Sephora") # some changes goes here
-```
-
-```bash
-terraform plan
-```
-
-The plan sould says: **No changes. Your infrastructure matches the configuration.**
-
-Terraform says that your infrastructure matches the configuration yet we changed the source code of the application. This happens because the zipped source file is still name "src.zip", neither the name of the output file nor the location has been changed, it is the reason why Terraform can't catch the change. However some hidden attributes related to the resource are going to be changes, for instance the _*md5hash*_ of the archive file, we can make use of that to explicitely tell Terraform to trigger function replacement whenever this attribute changes. We can do this by adding the following block to the cloud function resource definiton.
- <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
-    Edit main.tf
-</walkthrough-editor-open-file>
-
-```tf
-  lifecycle {
-    replace_triggered_by = [
-      google_storage_bucket_object.archive.md5hash
-    ]
-  }
-```
-```bash
-terraform plan
-```
-
-```bash
-terraform apply
-```
-
-The plan should says : **2 to add, 0 to change, 2 to destroy.**
-
-The following resources are going to be replaced:
-- google_storage_bucket_object.archive
-- google_cloudfunctions_function.function
-
-More information about the exported attributes related to the resource storage_bucket_object : https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object#attributes-reference
+** Notice **: The foreach meta-argument in Terraform is used to iterate over a list, set, or map and create multiple instances of a resource or module based on the elements of the collection. It allows you to dynamically generate resources or modules by repeating a block of code for each element in the collection. It offers more flexibility in defining the resource object in a variable and easily access the different attributes within it.
 
 ## Clean up
 
 You finished the lab, let's clean resources:
-
-First you need to update the lifecycle attribute **prevent_destroy** of the bigquery dataset and set it to false.
-
-Apply changes:
-```bash
-terraform apply --auto-approve
-```
-
-and then
 
 ```bash
 terraform destroy --auto-approve
