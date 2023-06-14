@@ -114,7 +114,7 @@ Verify that the bucket and the dataset are created successfully.
 
 Suppose that you have accidentely changed the name of the bigquery dataset. Terraform will delete the current dataset and then create the new one.
 
-Let's do this, try to add a random string to the name of the bucket.
+Let's do this, try to add a random string to the name of the dataset.
 
 <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
@@ -134,11 +134,11 @@ You should get the following error :
 
 This can be used as a measure of safety against the accidental replacement of objects that may be costly to reproduce, such as database instances. However, it will make certain configuration changes impossible to apply, and will prevent the use of the terraform destroy command once such objects are created, and so this option should be used sparingly.
 
-Now let's update the lifecycle;
+Now let's update the lifecycle block;
 
 ```
 lifecycle {
-    create_before_destroy = true
+    create_before_destroy = false
   }
 ```
 
@@ -194,7 +194,11 @@ Terraform will say that your infrastructure matches the configuration and there 
 
 **Notice**:  By default, Terraform detects any difference in the current settings of a real infrastructure object and plans to update the remote object to match configuration.
 
-The `ignore_changes` feature is intended to be used when a resource is created with references to data that may change in the future, but should not affect said resource after its creation. In some rare cases, settings of a remote object are modified by processes outside of Terraform, which Terraform would then attempt to "fix" on the next run. In order to make Terraform share management responsibilities of a single object with a separate process, the `ignore_changes` meta-argument specifies resource attributes that Terraform should ignore when planning updates to the associated remote object.
+The `ignore_changes` feature is intended to be used when a resource is created with references to data that may change in the future, but should not affect said resource after its creation.
+
+In some rare cases, settings of a remote object are modified by processes outside of Terraform, which Terraform would then attempt to "fix" on the next run.
+
+In order to make Terraform share management responsibilities of a single object with a separate process, the `ignore_changes` meta-argument specifies resource attributes that Terraform should ignore when planning updates to the associated remote object.
 
 ## Redeploy resource depending on other ressource attribute change
 
@@ -228,7 +232,7 @@ resource "google_cloudfunctions_function" "function" {
   runtime     = "python39"
 
   available_memory_mb   = 128
-  source_archive_bucket =google_storage_bucket.static-site.name
+  source_archive_bucket = google_storage_bucket.static-site.name
   source_archive_object = google_storage_bucket_object.archive.name
   trigger_http          = true
   entry_point           = "say_hello"
@@ -243,6 +247,10 @@ terraform plan
 ```
 
 The plan should tell you : 2 to add, 0 to change, 0 to destroy.
+
+Verify that the cloud function is created successefully
+[Cloud function list page](https://console.cloud.google.com/functions/list?project=<walkthrough-project-id/>)
+
 
 ```bash
 terraform apply --auto-approve
@@ -265,9 +273,12 @@ def say_hello(request):
 terraform plan
 ```
 
-The plan sould says: **No changes. Your infrastructure matches the configuration.**
+terraform should propose to replace only the google_storage_bucket_object.archive.
 
-Terraform says that your infrastructure matches the configuration yet we changed the source code of the application. This happens because the zipped source file is still name "src.zip", neither the name of the output file nor the location has been changed, it is the reason why Terraform can't catch the change. However some hidden attributes related to the resource are going to be changes, for instance the _*md5hash*_ of the archive file, we can make use of that to explicitely tell Terraform to trigger function replacement whenever this attribute changes. We can do this by adding the following block to the cloud function resource definiton.
+**Plan**: 1 to add, 0 to change, 1 to destroy.
+
+Terraform doesn't suggest to update the cloud function, yet we changed the source code of the application. This happens because the zipped source file is still name "src.zip", neither the name of the output file nor the location has been changed, it is the reason why Terraform can't catch the change. However some hidden attributes related to the resource are going to be changed, for instance the _*md5hash*_ of the archive file, we can make use of that to explicitely tell Terraform to trigger function replacement whenever this attribute changes. We can do this by adding the following block to the cloud function resource definiton.
+
  <walkthrough-editor-open-file
     filePath="cloudshell_open/terraform_labs/advanced/lab_01/iac/main.tf">
     Edit main.tf
@@ -284,6 +295,8 @@ Terraform says that your infrastructure matches the configuration yet we changed
 terraform plan
 ```
 
+Terraform should say: google_cloudfunctions_function.function will be replaced **due to changes in replace_triggered_by**
+
 ```bash
 terraform apply
 ```
@@ -294,20 +307,11 @@ The following resources are going to be replaced:
 - google_storage_bucket_object.archive
 - google_cloudfunctions_function.function
 
-More information about the exported attributes related to the resource storage_bucket_object : https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object#attributes-reference
+More information about the exported attributes related to the resource storage_bucket_object : [here](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object#attributes-reference)
 
 ## Clean up
 
 You finished the lab, let's clean resources:
-
-First you need to update the lifecycle attribute **prevent_destroy** of the bigquery dataset and set it to false.
-
-Apply changes:
-```bash
-terraform apply --auto-approve
-```
-
-and then
 
 ```bash
 terraform destroy --auto-approve
