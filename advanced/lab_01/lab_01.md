@@ -248,7 +248,8 @@ terraform plan
 
 The plan should tell you : 2 to add, 0 to change, 0 to destroy.
 
-Verify that the cloud function is created successefully
+Verify that the cloud function is created successefully.
+
 [Cloud function list page](https://console.cloud.google.com/functions/list?project=<walkthrough-project-id/>)
 
 
