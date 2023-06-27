@@ -65,7 +65,7 @@ provider "google" {
 resource "google_storage_bucket" "bucket" {
   count       = 3
   name        = "tf-lab-advabced-bucket-${count.index}"
-  location    = "us-central1"
+  location    = "europe-west1"
   storage_class = "STANDARD"
 }
 ```
