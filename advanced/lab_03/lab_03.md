@@ -57,7 +57,7 @@ terraform version
 Let's deploy some resources in your project using that specefic version of Terraform;
 
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_02/iac/provider.tf">
+    filePath="cloudshell_open/terraform_labs/advanced/lab_03/iac/provider.tf">
     Edit provider.tf
 </walkthrough-editor-open-file>
 ```tf
@@ -68,15 +68,34 @@ provider "google" {
 ```
 
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/advanced/lab_02/iac/main.tf">
+    filePath="cloudshell_open/terraform_labs/advanced/lab_03/iac/main.tf">
     Edit main.tf
 </walkthrough-editor-open-file>
 ```tf
 resource "google_storage_bucket" "bucket" {
-  count       = 3
-  name        = "tf-lab-advabced-bucket-${count.index}"
+  name        = "tf-lab-advabced-bucket"
   location    = "europe-west1"
   storage_class = "STANDARD"
+}
+```
+
+**Notice**: Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
+
+__Example__ : John Do -> Bucket name = "auto-expiring-bucket-jdo"
+
+**Notice**: Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
+
+__Example__ : John Do -> Bucket name = "auto-expiring-bucket-jdo"
+
+Now, it's time to fix the terraform version that can be used to run this code. By using version constraints, you can enforce compatibility and ensure that your configuration is used with the correct Terraform version. It helps prevent accidental use of incompatible features or behaviors introduced in different versions.
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/advanced/lab_03/iac/versions.tf">
+    Edit versions.tf
+</walkthrough-editor-open-file>
+```tf
+terraform {
+  required_version = ">= 0.15, < 0.16"
 }
 ```
 
