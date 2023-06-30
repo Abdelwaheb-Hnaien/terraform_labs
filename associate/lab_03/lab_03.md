@@ -132,9 +132,32 @@ tfswitch 1.5.0
 
  You should get the following error :
 
- ![error tf version](s4a-shared-terraform-gcs-lab-materials/advanced/lab_03/version_error_init.png)
+ ![error tf version](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_03/version_error_init.png)
 
  It's clear that Terraform is preventing you from running terraform command because the current version doesn't match the version specefied for `required_version` in versions.tf file.
+
+ To fix this you have two options:
+ - update terraform version to match `required_version` in versions.tf file.
+ - Set the `required_version` in versions.tf file to the terraform version you are using in your environment.
+
+Next, We will choose the second option:
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/advanced/lab_03/iac/versions.tf">
+    Edit versions.tf
+</walkthrough-editor-open-file>
+```tf
+terraform {
+  required_version = "1.5.0"
+}
+```
+Run:
+```tf
+terraform init
+```
+Terraform shoud successefully initialize:
+
+ ![error tf version](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/advanced/lab_03/version_success_init.png)
+ 
 ## End of the lab
 
 You're all set!
