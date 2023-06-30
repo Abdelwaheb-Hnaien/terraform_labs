@@ -1,13 +1,11 @@
-# [Associate] SEPHORA Terraform Course - Lab 03 : resources/variables/locals/data/outputs
+# [Advanced] SEPHORA Terraform Course - Lab 03 :Version Constraints and variable conditions
+
 ## Introduction
 ![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/sephora_terraform_bw.png)
 
-In this lab, we will see :
-  - Deploy resource
-  - Use variables and locals
-  - Use Data sources
-  - Outputs
-  - Resource dependencies
+In this lab you will learn about the following Terraform **meta-arguments**:
+- Version Constraints
+- Variable conditions
 
 ## Set up authentication
 
@@ -39,17 +37,41 @@ In this lab, we will see :
   ```bash
   export GOOGLE_APPLICATION_CREDENTIALS=<path-to-cred-file>
   ```
+## Version constraints
+Let's first install `tfswitch`, which is a command-line tool used in the context of working with Terraform. It is designed to simplify the process of managing multiple versions of Terraform on your local machine. It allows you to switch between different versions of Terraform with ease, ensuring that you can work with different projects or environments that may require specific versions of Terraform.
 
-## Deploy resource
-Let's use what we have learned in previous labs to create a bigquery dataset.
+More information about tfswitch in [https://tfswitch.warrensbox.com/](https://tfswitch.warrensbox.com/) .
 
-Edit provider.tf and add the following bloc :
+To install tfswitch, run:
+```sh
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | sudo bash
+
+```
+
+Let's check which Terraform version you have right now in your Cloud shell environment:
+
+```sh
+terraform version
+```
+
+Let's deploy some resources in your project using terraform v1.0.0. But before you need to download Terraform v1.0.0;
+
+```sh
+tfswitch 1.0.0
+```
+
+Make sure that Terraform is running the v1.0.0 version:
+
+```sh
+terraform version
+```
+
+Now it's time to deploy some resources using that specific version.
 
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/provider.tf">
-    Open provider.tf
+    filePath="cloudshell_open/terraform_labs/advanced/lab_03/iac/provider.tf">
+    Edit provider.tf
 </walkthrough-editor-open-file>
-
 ```tf
 provider "google" {
   project     = "<walkthrough-project-id/>"
@@ -57,289 +79,63 @@ provider "google" {
 }
 ```
 
-Now, let's declare the resource :
-
 <walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
-    Open main.tf
+    filePath="cloudshell_open/terraform_labs/advanced/lab_03/iac/main.tf">
+    Edit main.tf
 </walkthrough-editor-open-file>
-
 ```tf
-resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = "example_dataset"
-  friendly_name               = "test"
-  description                 = "This is a test"
-  location                    = "EU"
+resource "google_storage_bucket" "bucket" {
+  name        = "tf-lab-advabced-bucket"
+  location    = "europe-west1"
+  storage_class = "STANDARD"
 }
 ```
-dataset_id name should be unique in the project, to avoid potential conflict with other students we recommend you add your intials as suffix to the `dataset_id`
-.
 
-__Example__ : John Do -> dataset_id = "example_dataset_jdo"
+**Notice**: Bucket name should be unique accross the globe, we suggest you add your intials as suffix to the bucket name in `main.tf`.
 
-Let's access the working directory :
-```bash
-cd ~/cloudshell_open/terraform_labs/associate/lab_03/iac/
+__Example__ : John Do -> Bucket name = "auto-expiring-bucket-jdo"
+
+Now, it's time to fix the terraform version that can be used to run this code. By using version constraints, you can enforce compatibility and ensure that your configuration is used with the correct Terraform version. It helps prevent accidental use of incompatible features or behaviors introduced in different versions.
+
+<walkthrough-editor-open-file
+    filePath="cloudshell_open/terraform_labs/advanced/lab_03/iac/versions.tf">
+    Edit versions.tf
+</walkthrough-editor-open-file>
+```tf
+terraform {
+  required_version = "1.0.0"
+}
 ```
-Initialize terraform :
+
+Run:
 ```bash
+cd ~/cloudshell_open/terraform_labs/advanced/lab_03/iac/
+```
+```sh
 terraform init
 ```
-Plan your infrastructure :
-```bash
+```sh
 terraform plan
 ```
-You should see similar output :
-![tf_apply](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/tf_apply.png)
-
-Let's deploy the resource :
-```bash
-terraform apply --auto-approve
-```
-[Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
-
-Verify that the dataset is created successfully.
-
-## Use variables
-
-Let's make the code looks better by using variables.
-
-Update `main.tf`
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
-    Open main.tf
-</walkthrough-editor-open-file>
-
-```tf
-resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = var.dataset_id
-  friendly_name               = var.friendly_name
-  description                 = var.description
-  location                    = var.location
-}
-```
-
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/variables.tf">
-    Open variables.tf
-</walkthrough-editor-open-file>
-
-```tf
-variable "dataset_id" {
-  type        = string
-  description = "the dataset id"
-}
-variable "friendly_name" {
-  type        = string
-  description = "Dataset display name"
-}
-variable "description" {
-  type        = string
-  description = "Dataset description"
-}
-variable "location" {
-  type        = string
-  description = "the dataset location"
-  default     = "EU"
-}
-```
-
-Update `terraform.tfvars`
-
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/terraform.tfvars">
-    Open terraform.tfvars
-</walkthrough-editor-open-file>
-
-```tf
-dataset_id    = "example_dataset"
-friendly_name = "test"
-description   = "This is a test"
-location      = "EU"
-```
-**Notice** : Make sure to keep the same `dataset_id` as before (which means don't forget to add your initials).
-
-__Example__ : Your name is John Do -> dataset_id = "example_dataset_jdo"
-
-Run
-```bash
-terraform plan
-```
-
-You should see `No changes`. Your infrastructure matches the configuration."
-
-## Use locals
-<em>Terraform local values (or "locals") assign a name to an expression or value. Using locals **simplifies** your Terraform configuration – since you can reference the local **multiple** times, you **reduce** duplication in your code. Locals can also help you write **more readable** configuration by using meaningful names **rather** than hard-coding values.</em>
-
-We have a resource naming convention within **SEPHORA** organization that says that a Bigquery Dataset should always be prefixed with `s4a_bqd_`. We can use local variables to ensure that we meet this requirement:
-
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
-    Update main.tf
-</walkthrough-editor-open-file>
-
-```tf
-locals {
-  org_dataset_id = "s4a_bqd_${var.dataset_id}"
-
-}
-resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = local.org_dataset_id
-  friendly_name               = var.friendly_name
-  description                 = var.description
-  location                    = var.location
-}
-```
-Run
-```bash
-terraform plan
-```
-Since the dataset id changes, the plan output indicates that a new dataset will be created and the old dataset is going to be destroyed.
-`Plan: 1 to add, 0 to change, 1 to destroy.`
-
-Let's apply the change :
-```bash
-terraform apply --auto-approve
-```
-[Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
-
-Verify that the new dataset is created successfully and the old datset is deleted.
-
-## Resource dependencies
-Let's create a table in the dataset previously created. Add the table definition to main.tf :
-
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
-    Update main.tf :
-</walkthrough-editor-open-file>
-
-```tf
-resource "google_bigquery_table" "default" {
-  dataset_id = google_bigquery_dataset.dataset.dataset_id
-  deletion_protection = false
-  table_id   = "bar"
-
-  time_partitioning {
-    type = "DAY"
-  }
-
-  labels = {
-    env = "default"
-  }
-
-  schema = <<EOF
-[
-  {
-    "name": "permalink",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "The Permalink"
-  },
-  {
-    "name": "state",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "State where the head office is located"
-  }
-]
-EOF
-
-}
-```
-
-```bash
-terraform plan
-```
-
-```bash
+```sh
 terraform apply --auto-approve
 ```
 
-[Go to Bigquery Dataset list page](https://console.cloud.google.com/bigquery?referrer=search&orgonly=true&project=<walkthrough-project-id/>)
-
-Expand the dataset and verify that the table is created successfully.
-
-**Tips:** Resource dependency is simply referencing a resource in another resource definition bloc :
-
-`dataset_id = google_bigquery_dataset.dataset.dataset_id`
-
-In that case, terraform will create the bigquery Dataset prior to creating the table.
-
-## Data source
-<em>You can use Data Sources to get existing resource information created in GCP by other means (other than the current terraform code).</em>
-
-We have created a service account named `sac-lab-terraform`. Let's use the data source `google_service_account` data source to get the email address of that service account and grant it the role "Bigquery Data Viewer" to be able to access our dataset.
-
-Add the following data source to `main.tf`
-
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/main.tf">
-    Update main.tf
-</walkthrough-editor-open-file>
-
-```tf
-data "google_service_account" "lab_sa" {
-  account_id = "sac-labo-training"
-}
-
-resource "google_project_iam_member" "project" {
-  project = "<walkthrough-project-id/>"
-  role    = "roles/bigquery.dataViewer"
-  member  = "serviceAccount:${data.google_service_account.lab_sa.email}"
-}
-```
-
-Let's apply the changes:
+Let's update Terraform version to 1.5.0:
 ```bash
-terraform plan
+tfswitch 1.5.0
 ```
-```bash
-terraform apply --auto-approve
-```
+ Run :
+ ```bash
+ terraform init
+ ```
 
-Go to Google Cloud console > IAM & Admin, verify that the service account has the `Bigquery Data Viewer role`. (Make sure you select the project `<walkthrough-project-id/>`)
+ You should get the following error :
 
-## Terraform outputs
+ ![error tf version](s4a-shared-terraform-gcs-lab-materials/advanced/lab_03/version_error_init.png)
 
-<em>Output values make information about your infrastructure available on the command line, and can expose information for other Terraform configurations to use. Output values are similar to return values in programming languages.</em>
-
-Let's export some information about the dataset we have created in this lab. You can find the list of attributes that can be exported
-[here](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_dataset#attributes-reference).
-
-<walkthrough-editor-open-file
-    filePath="cloudshell_open/terraform_labs/associate/lab_03/iac/outputs.tf">
-    Edit outputs.tf
-</walkthrough-editor-open-file>
-
-```tf
-output "id" {
-  value = google_bigquery_dataset.dataset.dataset_id
-}
-
-output "self_link" {
-  value = google_bigquery_dataset.dataset.self_link
-}
-```
-
-Let's apply the changes and see what we get :
-```bash
-terraform plan
-```
-```bash
-terraform apply --auto-approve
-```
-You should see similar output :
-![SEPHORA_TERRAFORM](https://storage.googleapis.com/s4a-shared-terraform-gcs-lab-materials/output.png)
-
-We will explore in more details how to use output values in the code in another advanced lab about Terraform modules.
-
-
-## Cleanup
-
-```bash
-terraform destroy --auto-approve
-```
-In the Google Cloud console, go to the Cloud Storage Buckets page and verify that the bucket is no longer existing.
+ It's clear that Terraform is preventing you from running terraform command because the current version doesn't match the version specefied for `required_version` in versions.tf file.
+## End of the lab
 
 You're all set!
 
